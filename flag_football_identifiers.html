@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flag Football Kit — With Player Identifiers</title>
+<style>
+  :root{
+    --field-green:#2e7d32; --field-green-dark:#1b5e20; --field-line:#e0f2f1;
+    --qb:#1e88e5; --center:#6d4c41; --receiver:#f4511e; --rb:#8e24aa; --slot:#fbc02d;
+    --accent:#0d47a1;
+  }
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fafafa;margin:0;color:#111}
+  header{background:#111;color:#fff;padding:16px 20px}
+  h1{margin:0;font-size:20px} .sub{opacity:.85;font-size:13px;margin-top:2px}
+  main{max-width:1150px;margin:0 auto;padding:20px}
+  .panel{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:14px;margin:10px 0}
+  .grid{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:980px){.grid{grid-template-columns:1fr 1fr}}
+  .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:10px;border:2px solid #123814}
+  .field{width:100%;height:420px;position:relative;background:repeating-linear-gradient( to bottom, transparent 0, transparent 38px, rgba(255,255,255,.12) 38px, rgba(255,255,255,.12) 40px );border-radius:8px}
+  .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:8px}
+  svg{width:100%;height:100%;display:block}
+  .player{stroke:#111;stroke-width:1.2px}
+  .p-label{font-size:12px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.8px;font-weight:700}
+  .id-badge{font-size:11px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.8px;font-weight:800}
+  .route{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 8; animation:dash 2.6s linear infinite}
+  .route.alt{stroke:#ffeb3b}
+  .arrow-head{fill:#fff}
+  @keyframes dash{to{stroke-dashoffset:-200}}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 10px}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:999px;padding:4px 8px;font-size:12px}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .controls input,.controls select{padding:8px;border:1px solid #bbb;border-radius:8px}
+  .btn{padding:8px 12px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{border:1px solid #e0e0e0;padding:8px;text-align:center}
+  th{background:#f5f5f5}
+  .muted{color:#555;font-size:13px}
+  .two{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:720px){.two{grid-template-columns:1fr 1fr}}
+  .name-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .name-grid label{display:flex;flex-direction:column;font-size:12px;gap:4px}
+  .bench{font-size:13px;color:#333}
+</style>
+</head>
+<body>
+<header>
+  <h1>Flag Football Kit — Player Identifier Overlay</h1>
+  <div class="sub">Select roster size and series. The player numbers/initials will overlay onto each play diagram so kids know where to line up.</div>
+</header>
+<main>
+  <div class="panel">
+    <div class="controls">
+      <label>Roster size
+        <select id="roster">
+          <option value="8">8</option>
+          <option value="9" selected>9</option>
+        </select>
+      </label>
+      <label>Series
+        <select id="series"></select>
+      </label>
+      <label>Label mode
+        <select id="labelMode">
+          <option value="role">Role (QB/C/WR…)</option>
+          <option value="number" selected>Player #</option>
+          <option value="initials">Initials (map below)</option>
+        </select>
+      </label>
+      <button class="btn" id="apply">Apply</button>
+    </div>
+    <details style="margin-top:10px">
+      <summary>Optional: Map player numbers to initials (for “Initials” mode)</summary>
+      <div class="name-grid" id="nameGrid"></div>
+    </details>
+    <p class="muted">Tip: Call out “Series 3 – numbers 3,4,5,6,7,8 on the field.” The diagrams will show each kid’s number at their spot for every play.</p>
+  </div>
+
+  <div class="panel">
+    <div class="legend">
+      <span class="pill"><span class="dot" style="background:var(--qb)"></span>QB</span>
+      <span class="pill"><span class="dot" style="background:var(--center)"></span>Center</span>
+      <span class="pill"><span class="dot" style="background:var(--receiver)"></span>WR L/R</span>
+      <span class="pill"><span class="dot" style="background:var(--slot)"></span>Slot</span>
+      <span class="pill"><span class="dot" style="background:var(--rb)"></span>RB</span>
+    </div>
+    <p class="muted">Offense at bottom going up. All four plays update with the identifiers you choose.</p>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h3>Play 1: Double Go — "Green"</h3>
+      <div class="field-wrap"><div class="field"><div class="sideline"></div>
+        <svg viewBox="0 0 600 400" data-play="green">
+          <circle cx="300" cy="360" r="12" class="player" fill="var(--qb)"></circle><text class="p-label" x="300" y="365" text-anchor="middle">QB</text>
+          <circle cx="300" cy="330" r="12" class="player" fill="var(--center)"></circle><text class="p-label" x="300" y="335" text-anchor="middle">C</text>
+          <circle cx="170" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text class="p-label" x="170" y="335" text-anchor="middle">WR-L</text>
+          <circle cx="430" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text class="p-label" x="430" y="335" text-anchor="middle">WR-R</text>
+          <circle cx="245" cy="340" r="12" class="player" fill="var(--slot)"></circle><text class="p-label" x="245" y="345" text-anchor="middle">Slot</text>
+          <circle cx="355" cy="340" r="12" class="player" fill="var(--rb)"></circle><text class="p-label" x="355" y="345" text-anchor="middle">RB</text>
+          <text class="id-badge" data-pos="QB" x="300" y="348" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="C" x="300" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-L" x="170" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-R" x="430" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="Slot" x="245" y="327" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="RB" x="355" y="327" text-anchor="middle"></text>
+          <path d="M170 330 C170 300 170 260 170 220" class="route"></path><polygon points="170,210 165,220 175,220" class="arrow-head"></polygon>
+          <path d="M430 330 C430 300 430 260 430 220" class="route"></path><polygon points="430,210 425,220 435,220" class="arrow-head"></polygon>
+          <path d="M245 340 C245 330 260 325 300 325" class="route alt"></path><polygon points="310,325 300,320 300,330" class="arrow-head"></polygon>
+          <path d="M355 340 C355 350 350 355 335 355 C320 355 320 345 320 335" class="route"></path><polygon points="320,325 315,335 325,335" class="arrow-head"></polygon>
+        </svg>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h3>Play 2: Quick Slants — "Blue"</h3>
+      <div class="field-wrap"><div class="field"><div class="sideline"></div>
+        <svg viewBox="0 0 600 400" data-play="blue">
+          <circle cx="300" cy="360" r="12" class="player" fill="var(--qb)"></circle><text class="p-label" x="300" y="365" text-anchor="middle">QB</text>
+          <circle cx="300" cy="330" r="12" class="player" fill="var(--center)"></circle><text class="p-label" x="300" y="335" text-anchor="middle">C</text>
+          <circle cx="170" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text class="p-label" x="170" y="335" text-anchor="middle">WR-L</text>
+          <circle cx="430" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text class="p-label" x="430" y="335" text-anchor="middle">WR-R</text>
+          <circle cx="245" cy="340" r="12" class="player" fill="var(--slot)"></circle><text class="p-label" x="245" y="345" text-anchor="middle">Slot</text>
+          <circle cx="355" cy="340" r="12" class="player" fill="var(--rb)"></circle><text class="p-label" x="355" y="345" text-anchor="middle">RB</text>
+          <text class="id-badge" data-pos="QB" x="300" y="348" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="C" x="300" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-L" x="170" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-R" x="430" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="Slot" x="245" y="327" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="RB" x="355" y="327" text-anchor="middle"></text>
+          <path d="M170 330 C175 320 190 305 220 290" class="route"></path><polygon points="228,286 217,288 223,296" class="arrow-head"></polygon>
+          <path d="M430 330 C425 320 410 305 380 290" class="route"></path><polygon points="372,286 377,296 383,288" class="arrow-head"></polygon>
+          <path d="M245 340 C230 340 215 345 205 352" class="route alt"></path><polygon points="198,357 210,354 205,347" class="arrow-head"></polygon>
+          <path d="M300 330 C300 315 300 305 300 295" class="route"></path><polygon points="300,285 295,295 305,295" class="arrow-head"></polygon>
+        </svg>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h3>Play 3: Smash — "Gold"</h3>
+      <div class="field-wrap"><div class="field"><div class="sideline"></div>
+        <svg viewBox="0 0 600 400" data-play="gold">
+          <circle cx="300" cy="360" r="12" class="player" fill="var(--qb)"></circle><text class="p-label" x="300" y="365" text-anchor="middle">QB</text>
+          <circle cx="300" cy="330" r="12" class="player" fill="var(--center)"></circle><text class="p-label" x="300" y="335" text-anchor="middle">C</text>
+          <circle cx="170" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text x="170" y="335" class="p-label" text-anchor="middle">WR-L</text>
+          <circle cx="430" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text x="430" y="335" class="p-label" text-anchor="middle">WR-R</text>
+          <circle cx="245" cy="340" r="12" class="player" fill="var(--slot)"></circle><text x="245" y="345" class="p-label" text-anchor="middle">Slot</text>
+          <circle cx="355" cy="340" r="12" class="player" fill="var(--rb)"></circle><text x="355" y="345" class="p-label" text-anchor="middle">RB</text>
+          <text class="id-badge" data-pos="QB" x="300" y="348" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="C" x="300" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-L" x="170" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-R" x="430" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="Slot" x="245" y="327" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="RB" x="355" y="327" text-anchor="middle"></text>
+          <path d="M430 330 C430 320 430 305 430 300" class="route"></path><polygon points="430,290 425,300 435,300" class="arrow-head"></polygon>
+          <path d="M245 340 C260 330 290 315 330 300 C360 290 380 270 395 250" class="route alt"></path><polygon points="401,243 389,248 396,255" class="arrow-head"></polygon>
+          <path d="M170 330 C170 300 170 260 170 220" class="route"></path><polygon points="170,210 165,220 175,220" class="arrow-head"></polygon>
+          <path d="M300 330 C300 320 315 315 340 315" class="route"></path><polygon points="350,315 340,310 340,320" class="arrow-head"></polygon>
+        </svg>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h3>Play 4: Flood — "White"</h3>
+      <div class="field-wrap"><div class="field"><div class="sideline"></div>
+        <svg viewBox="0 0 600 400" data-play="white">
+          <circle cx="300" cy="360" r="12" class="player" fill="var(--qb)"></circle><text class="p-label" x="300" y="365" text-anchor="middle">QB</text>
+          <circle cx="300" cy="330" r="12" class="player" fill="var(--center)"></circle><text class="p-label" x="300" y="335" text-anchor="middle">C</text>
+          <circle cx="170" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text class="p-label" x="170" y="335" text-anchor="middle">WR-L</text>
+          <circle cx="430" cy="330" r="12" class="player" fill="var(--receiver)"></circle><text class="p-label" x="430" y="335" text-anchor="middle">WR-R</text>
+          <circle cx="245" cy="340" r="12" class="player" fill="var(--slot)"></circle><text class="p-label" x="245" y="345" text-anchor="middle">Slot</text>
+          <circle cx="355" cy="340" r="12" class="player" fill="var(--rb)"></circle><text class="p-label" x="355" y="345" text-anchor="middle">RB</text>
+          <text class="id-badge" data-pos="QB" x="300" y="348" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="C" x="300" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-L" x="170" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="WR-R" x="430" y="317" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="Slot" x="245" y="327" text-anchor="middle"></text>
+          <text class="id-badge" data-pos="RB" x="355" y="327" text-anchor="middle"></text>
+          <path d="M300 360 C320 355 340 350 355 345" class="route"></path><polygon points="363,342 352,343 357,351" class="arrow-head"></polygon>
+          <path d="M430 330 C430 300 430 260 430 220" class="route"></path><polygon points="430,210 425,220 435,220" class="arrow-head"></polygon>
+          <path d="M245 340 C260 330 285 325 330 325" class="route alt"></path><polygon points="340,325 330,320 330,330" class="arrow-head"></polygon>
+          <path d="M355 340 C370 337 390 337 405 337" class="route"></path><polygon points="415,337 405,332 405,342" class="arrow-head"></polygon>
+          <path d="M170 330 C190 330 210 330 230 335 260 342 280 342 300 342" class="route"></path><polygon points="310,342 300,337 300,347" class="arrow-head"></polygon>
+        </svg>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Bench for this series</h3>
+    <p class="bench" id="benchText">-</p>
+  </div>
+
+  <div class="panel">
+    <h3>How to use identifiers with 8–9 year olds</h3>
+    <div class="two">
+      <div>
+        <ol>
+          <li><b>Number the kids 1–9</b> at the start of the season. Put the number on a small helmet sticker or wristband.</li>
+          <li>Before each series, call “Series X: numbers A–F on.” The diagrams already show those numbers at QB/C/WR/Slot/RB.</li>
+          <li>Use <b>initials mode</b> if parents prefer names. Give each kid a laminated card with their number & initials.</li>
+          <li>Place two small cones where WRs line up. Kids match their number to the spot on the diagram.</li>
+        </ol>
+      </div>
+      <div>
+        <ul>
+          <li>Everyone plays QB once per rotation; benches N–6 times. Zero politics, just math.</li>
+          <li>Keep the same four plays all season. Repetition builds confidence.</li>
+          <li>When in doubt: Slants on 1st, Flood on 2nd, Smash on 3rd.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const POS = ["QB","C","WR-L","WR-R","Slot","RB"];
+
+  function generateRotation(rosterSize, seriesCount){
+    const players = Array.from({length: rosterSize}, (_,i)=> i+1);
+    const rows = [];
+    for(let s=0; s<seriesCount; s++){
+      const order = players.map((p,idx)=> players[(idx + s) % rosterSize]);
+      const onField = order.slice(0,6);
+      const bench = order.slice(6);
+      const lineup = { "QB":onField[0], "C":onField[1], "WR-L":onField[2], "WR-R":onField[3], "Slot":onField[4], "RB":onField[5] };
+      rows.push({series:s+1, lineup, bench});
+    }
+    return rows;
+  }
+
+  const rosterSel = document.getElementById('roster');
+  const seriesSel = document.getElementById('series');
+  const labelModeSel = document.getElementById('labelMode');
+  const benchText = document.getElementById('benchText');
+  const nameGrid = document.getElementById('nameGrid');
+
+  function buildSeriesOptions(){
+    const n = parseInt(rosterSel.value,10);
+    seriesSel.innerHTML='';
+    for(let s=1; s<=n; s++){
+      const opt = document.createElement('option');
+      opt.value = s; opt.textContent = s;
+      seriesSel.appendChild(opt);
+    }
+  }
+
+  function buildNameGrid(){
+    nameGrid.innerHTML='';
+    const n = parseInt(rosterSel.value,10);
+    for(let i=1;i<=n;i++){
+      const wrap = document.createElement('label');
+      wrap.innerHTML = `#${i} Initials<input type="text" maxlength="3" id="init-${i}" placeholder="e.g., JP">`;
+      nameGrid.appendChild(wrap);
+    }
+  }
+
+  function currentInitialsMap(){
+    const n = parseInt(rosterSel.value,10);
+    const map = {};
+    for(let i=1;i<=n;i++){
+      map[i] = (document.getElementById('init-'+i)?.value || '').toUpperCase().slice(0,3);
+    }
+    return map;
+  }
+
+  function applyOverlay(){
+    const n = parseInt(rosterSel.value,10);
+    const series = parseInt(seriesSel.value,10);
+    const rows = generateRotation(n,n);
+    const row = rows[series-1];
+    const labelMode = labelModeSel.value;
+    const initials = currentInitialsMap();
+
+    document.querySelectorAll('svg').forEach(svg=>{
+      POS.forEach(pos=>{
+        const el = svg.querySelector(`text.id-badge[data-pos="${pos}"]`);
+        if(!el) return;
+        let text = '';
+        if(labelMode === 'role'){
+          text = pos.replace('-L',' L').replace('-R',' R');
+        } else if(labelMode === 'number'){
+          text = row.lineup[pos];
+        } else {
+          const num = row.lineup[pos];
+          text = initials[num] || num;
+        }
+        el.textContent = text;
+      });
+    });
+
+    benchText.textContent = row.bench.length ? `Bench: ${row.bench.join(', ')}` : 'No bench this series';
+  }
+
+  document.getElementById('apply').addEventListener('click', applyOverlay);
+  rosterSel.addEventListener('change', ()=>{ buildSeriesOptions(); buildNameGrid(); applyOverlay(); });
+  seriesSel.addEventListener('change', applyOverlay);
+  labelModeSel.addEventListener('change', applyOverlay);
+
+  // Init
+  buildSeriesOptions();
+  buildNameGrid();
+  applyOverlay();
+</script>
+</body>
+</html>
