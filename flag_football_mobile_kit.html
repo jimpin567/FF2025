@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Youth Flag Football Kit (5v5 / 6v6 / 7v7)</title>
+<style>
+  :root{
+    --field-green:#2e7d32; --field-green-dark:#1b5e20; --field-line:#e0f2f1;
+    --qb:#1e88e5; --center:#6d4c41; --wr:#f4511e; --slot:#fbc02d; --rb:#8e24aa; --flex:#26a69a;
+    --def:#90caf9; --zone:#ffffff18;
+    --ink:#111; --muted:#555; --accent:#0d47a1;
+  }
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;color:var(--ink);background:#fafafa}
+  header{background:#111;color:#fff;padding:14px 16px}
+  h1{margin:0;font-size:18px}
+  .sub{font-size:12px;opacity:.9;margin-top:4px}
+  nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  nav button{border:1px solid #fff;background:#fff;color:#111;padding:8px 10px;border-radius:10px}
+  nav button.active{background:#0d47a1;color:#fff;border-color:#0d47a1}
+  main{padding:12px;max-width:1000px;margin:0 auto}
+  .panel{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:12px;margin:10px 0}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .controls select,.controls input{padding:8px;border:1px solid #bbb;border-radius:10px;background:#fff}
+  .btn{padding:8px 12px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#fff}
+  .grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 8px}
+  .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:999px;padding:4px 8px;font-size:12px}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .muted{color:var(--muted);font-size:12px}
+  .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:8px;border:2px solid #123814}
+  .field{height:360px;position:relative;background:repeating-linear-gradient(to bottom, transparent 0, transparent 36px, rgba(255,255,255,.12) 36px, rgba(255,255,255,.12) 38px);border-radius:10px}
+  .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:10px}
+  svg{width:100%;height:100%;display:block}
+  .player{stroke:#0008;stroke-width:1.2px}
+  .bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}
+  .role{font-size:11px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.8px}
+  .route{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-dasharray:6 8;animation:dash 2.6s linear infinite}
+  .route.alt{stroke:#ffeb3b}
+  .arrow{fill:#fff}
+  @keyframes dash{to{stroke-dashoffset:-200}}
+  .zone{fill:var(--zone);stroke:#fff;stroke-width:1}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border:1px solid #e0e0e0;padding:6px;text-align:center}
+  th{background:#f5f5f5;position:sticky;top:0}
+  .nowrap{white-space:nowrap}
+  @media print{ nav,.controls{display:none} .panel{box-shadow:none} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Youth Flag Football Kit</h1>
+  <div class="sub">Formats: 5v5 / 6v6 / 7v7 • Mobile‑friendly • Equal rotations • Simple offense & defense</div>
+  <nav>
+    <button class="tab active" data-tab="offense">Offense</button>
+    <button class="tab" data-tab="rotations">Rotations</button>
+    <button class="tab" data-tab="defense">Defense</button>
+    <button class="tab" data-tab="tips">Tips</button>
+  </nav>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="controls">
+      <label>Format
+        <select id="format">
+          <option value="5">5v5</option>
+          <option value="6" selected>6v6</option>
+          <option value="7">7v7</option>
+        </select>
+      </label>
+      <label>Roster size
+        <select id="roster">
+          <option>7</option><option selected>9</option><option>10</option><option>12</option>
+        </select>
+      </label>
+      <label>Series
+        <select id="series"></select>
+      </label>
+      <label>Identifiers
+        <select id="idMode">
+          <option value="number" selected>Player #</option>
+          <option value="initials">Initials</option>
+          <option value="off">Off</option>
+        </select>
+      </label>
+      <button class="btn" id="apply">Apply</button>
+    </div>
+    <details style="margin-top:6px">
+      <summary>Optional: enter initials for your numbered players</summary>
+      <div id="initials" class="controls" style="margin-top:6px;gap:6px"></div>
+    </details>
+    <p class="muted">Numbers are printed inside the player circles. Roles (QB, C, WR, Slot, RB, Flex) are shown below each circle. Format hides extra positions automatically.</p>
+  </div>
+
+  <section id="offense" class="panel">
+    <div class="legend">
+      <span class="pill"><span class="dot" style="background:var(--qb)"></span>QB</span>
+      <span class="pill"><span class="dot" style="background:var(--center)"></span>C</span>
+      <span class="pill"><span class="dot" style="background:var(--wr)"></span>WR</span>
+      <span class="pill"><span class="dot" style="background:var(--slot)"></span>Slot</span>
+      <span class="pill"><span class="dot" style="background:var(--rb)"></span>RB</span>
+      <span class="pill"><span class="dot" style="background:var(--flex)"></span>Flex (7v7 only)</span>
+    </div>
+    <div class="grid" id="playGrid"></div>
+  </section>
+
+  <section id="rotations" class="panel" style="display:none">
+    <h3>Equal‑time Rotation (per series)</h3>
+    <p class="muted">Across N series (N = roster size), each player is QB once and benches <span class="nowrap">N − format</span> times. Fielded positions match your Format.</p>
+    <div id="rotationTable" class="panel" style="padding:0"></div>
+  </section>
+
+  <section id="defense" class="panel" style="display:none">
+    <h3>Base Youth Defenses</h3>
+    <p class="muted">Keep it simple. Priorities: pull the flag, protect the goal line, eyes on hips (not ball), rally to the ball.</p>
+    <div class="grid" id="defGrid"></div>
+  </section>
+
+  <section id="tips" class="panel" style="display:none">
+    <h3>Practical Game Management</h3>
+    <ul>
+      <li><b>Sideline cadence:</b> “Huddle here” → play name → “On GO” → “Series X on” → line up by diagram.</li>
+      <li><b>Default rhythm:</b> 1st &amp; 2nd down Slants/Flood, 3rd down Smash, 4th down Go or Flood.</li>
+      <li><b>Time saver:</b> Teach WR landmarks (outside numbers, 5 and 10 yards) with cones.</li>
+      <li><b>Parent transparency:</b> The rotation table is math, not politics. Everyone plays QB once per cycle.</li>
+    </ul>
+    <h3>60‑minute Practice</h3>
+    <ol>
+      <li>Warm‑up &amp; flags — 5</li>
+      <li>Routes on air (slant, hitch, go) — 10</li>
+      <li>Install 3 plays (Smash/Flood/Crossers) — 12</li>
+      <li>QB/RB timing + jet sweep handoff — 10</li>
+      <li>Team vs air (script 9 plays) — 18</li>
+      <li>Two‑minute drill — 4</li>
+      <li>Huddle &amp; parent note — 1</li>
+    </ol>
+  </section>
+</main>
+
+<script>
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const POS_BASE = [
+    {key:"QB", color:"var(--qb)", x:300, y:330},
+    {key:"C", color:"var(--center)", x:300, y:300},
+    {key:"WR-L", color:"var(--wr)", x:180, y:300},
+    {key:"WR-R", color:"var(--wr)", x:420, y:300},
+    {key:"Slot", color:"var(--slot)", x:240, y:310},
+    {key:"RB", color:"var(--rb)", x:360, y:310},
+    {key:"Flex", color:"var(--flex)", x:300, y:275}
+  ];
+  function positionsForFormat(fmt){
+    if(fmt==5) return ["QB","C","WR-L","WR-R","RB"];
+    if(fmt==6) return ["QB","C","WR-L","WR-R","Slot","RB"];
+    return ["QB","C","WR-L","WR-R","Slot","RB","Flex"];
+  }
+  function generateRotation(rosterSize, fmt, seriesCount){
+    const players = Array.from({length: rosterSize}, (_,i)=> i+1);
+    const rows = [];
+    for(let s=0; s<seriesCount; s++){
+      const rotated = players.map((p,idx)=> players[(idx+s)%rosterSize]);
+      const onField = rotated.slice(0, fmt);
+      const bench = rotated.slice(fmt);
+      const pkeys = positionsForFormat(fmt);
+      const lineup = {};
+      for(let i=0;i<pkeys.length;i++){ lineup[pkeys[i]] = onField[i]; }
+      rows.push({series:s+1, lineup, bench});
+    }
+    return rows;
+  }
+  function initialsMap(rosterSize){
+    const map = {};
+    for(let i=1;i<=rosterSize;i++){
+      const el = document.getElementById("init-"+i);
+      const v = (el && el.value || "").toUpperCase().slice(0,3);
+      map[i] = v;
+    }
+    return map;
+  }
+  function playerBubble(pos, numText, showRole, color){
+    return `
+      <circle cx="${pos.x}" cy="${pos.y}" r="16" class="player" fill="${pos.color}"></circle>
+      <text x="${pos.x}" y="${pos.y+4}" text-anchor="middle" class="bubble">${numText}</text>
+      ${showRole?`<text x="${pos.x}" y="${pos.y+18}" text-anchor="middle" class="role">${pos.key.replace('-L',' L').replace('-R',' R')}</text>`:''}
+    `;
+  }
+  const PLAYS = [
+    {name:"Double Go (2 verts)", key:"go", buildRoutes:fmt=>`
+      <path d="M180 300 C180 260 180 220 180 180" class="route"></path><polygon points="180,170 175,180 185,180" class="arrow"></polygon>
+      <path d="M420 300 C420 260 420 220 420 180" class="route"></path><polygon points="420,170 415,180 425,180" class="arrow"></polygon>
+      <path d="M240 310 C260 305 280 305 300 305" class="route alt"></path><polygon points="310,305 300,300 300,310" class="arrow"></polygon>
+    `},
+    {name:"Quick Slants", key:"slants", buildRoutes:fmt=>`
+      <path d="M180 300 C190 285 210 270 240 255" class="route"></path><polygon points="248,250 237,253 243,260" class="arrow"></polygon>
+      <path d="M420 300 C410 285 390 270 360 255" class="route"></path><polygon points="352,250 358,260 364,253" class="arrow"></polygon>
+      <path d="M300 300 C300 285 300 275 300 265" class="route"></path><polygon points="300,255 295,265 305,265" class="arrow"></polygon>
+    `},
+    {name:"Smash (Corner + Hitch)", key:"smash", buildRoutes:fmt=>`
+      <path d="M420 300 C420 285 420 275 420 270" class="route"></path><polygon points="420,260 415,270 425,270" class="arrow"></polygon>
+      <path d="M240 310 C270 295 310 280 350 270 C380 260 400 245 415 230" class="route alt"></path><polygon points="421,224 410,229 417,236" class="arrow"></polygon>
+    `},
+    {name:"Flood (3 levels to right)", key:"flood", buildRoutes:fmt=>`
+      <path d="M420 300 C420 260 420 220 420 180" class="route"></path><polygon points="420,170 415,180 425,180" class="arrow"></polygon>
+      <path d="M240 310 C270 305 320 305 360 305" class="route alt"></path><polygon points="370,305 360,300 360,310" class="arrow"></polygon>
+      <path d="M360 310 C380 308 395 308 410 308" class="route"></path><polygon points="420,308 410,303 410,313" class="arrow"></polygon>
+    `},
+    {name:"Crossers", key:"cross", buildRoutes:fmt=>`
+      <path d="M180 300 C210 300 250 305 300 315" class="route"></path><polygon points="310,317 300,312 300,322" class="arrow"></polygon>
+      <path d="M420 300 C390 300 350 305 300 315" class="route"></path><polygon points="290,317 300,312 300,322" class="arrow"></polygon>
+      <path d="M300 300 C300 285 300 275 300 265" class="route"></path><polygon points="300,255 295,265 305,265" class="arrow"></polygon>
+    `},
+    {name:"Jet Sweep (Slot in motion)", key:"jet", buildRoutes:fmt=>`
+      <path d="M245 310 C245 310 220 310 200 310 180 310 165 312 150 315" class="route alt"></path>
+      <polygon points="140,317 150,312 150,322" class="arrow"></polygon>
+    `}
+  ];
+  function buildPlaySVG(fmt, lineup, idMode, initMap){
+    const pkeys = positionsForFormat(fmt);
+    const bubbles = pkeys.map(k=>{
+      const pos = POS_BASE.find(p=>p.key===k);
+      const num = lineup[k];
+      let label = "";
+      if(idMode==="number") label = num;
+      else if(idMode==="initials") label = (initMap[num]||num);
+      else label = "";
+      return playerBubble(pos, label, true, pos.color);
+    }).join("");
+    return bubbles;
+  }
+  function renderPlays(){
+    const fmt = parseInt($("#format").value,10);
+    const roster = parseInt($("#roster").value,10);
+    const series = parseInt($("#series").value,10);
+    const rows = generateRotation(roster, fmt, roster);
+    const row = rows[series-1];
+    const idMode = $("#idMode").value;
+    const initMap = initialsMap(roster);
+    const grid = $("#playGrid");
+    grid.innerHTML = "";
+    PLAYS.forEach(p=>{
+      const card = document.createElement("div");
+      card.className="panel";
+      card.innerHTML = `
+        <h3 style="margin:4px 0">${p.name}</h3>
+        <div class="field-wrap"><div class="field"><div class="sideline"></div>
+          <svg viewBox="0 0 600 360">
+            ${buildPlaySVG(fmt, row.lineup, idMode, initMap)}
+            ${p.buildRoutes(fmt)}
+          </svg>
+        </div></div>
+        <p class="muted" style="margin-top:6px">${coachingNote(p.key)}</p>
+      `;
+      grid.appendChild(card);
+    });
+  }
+  function coachingNote(key){
+    const map={
+      go:"Throw deep if outside WR beats defender. Safety valve: Slot out / RB check.",
+      slants:"Pick the soft side pre‑snap. Ball out quick. Center settle if closed.",
+      smash:"Read corner: if he sinks, hitch; if he jumps, throw corner.",
+      flood:"Roll right. Read short→mid→deep along the sideline.",
+      cross:"Crossers confuse zone. Hit first open crosser; settle in space.",
+      jet:"Fake pass, hand to Slot in motion. Everyone else runs off defenders."
+    }; return map[key]||"";
+  }
+  function renderRotation(){
+    const fmt = parseInt($("#format").value,10);
+    const roster = parseInt($("#roster").value,10);
+    const rows = generateRotation(roster, fmt, roster);
+    const pkeys = positionsForFormat(fmt);
+    let html = `<table><thead><tr><th>Series</th>${pkeys.map(p=>`<th>${p}</th>`).join("")}<th>Bench</th></tr></thead><tbody>`;
+    rows.forEach(r=>{
+      html += `<tr><td>${r.series}</td>${pkeys.map(p=>`<td>${r.lineup[p]||""}</td>`).join("")}<td>${r.bench.join(", ")||"-"}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    $("#rotationTable").innerHTML = html;
+  }
+  const DEF_BUILDS = {
+    "5": [
+      {name:"5v5 Base Zone (2 Rush, 3 Zone)", build:()=>`
+        <rect x="60" y="210" width="480" height="50" class="zone"></rect>
+        <rect x="60" y="150" width="480" height="50" class="zone"></rect>
+        <circle cx="240" cy="290" r="16" class="player" fill="var(--def)"></circle><text x="240" y="294" class="bubble" text-anchor="middle">R</text>
+        <circle cx="360" cy="290" r="16" class="player" fill="var(--def)"></circle><text x="360" y="294" class="bubble" text-anchor="middle">R</text>
+        <circle cx="180" cy="235" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="300" cy="205" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="420" cy="235" r="16" class="player" fill="var(--def)"></circle>
+      `, note:"Two rushers force quick throws. Three across play eyes‑on‑QB, pull flags moving forward."},
+      {name:"5v5 Man with Safety", build:()=>`
+        <rect x="60" y="120" width="480" height="40" class="zone"></rect>
+        <circle cx="140" cy="260" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="220" cy="260" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="380" cy="260" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="460" cy="260" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="300" cy="140" r="16" class="player" fill="var(--def)"></circle><text x="300" y="144" class="bubble" text-anchor="middle">S</text>
+      `, note:"Four match up; one deep safety keeps everything in front. Teach hip‑tracking, not ball‑watching."}
+    ],
+    "6": [
+      {name:"6v6 1 Rush, 2‑3 Zone", build:()=>`
+        <rect x="60" y="220" width="480" height="45" class="zone"></rect>
+        <rect x="60" y="165" width="480" height="45" class="zone"></rect>
+        <circle cx="300" cy="295" r="16" class="player" fill="var(--def)"></circle><text x="300" y="299" class="bubble" text-anchor="middle">R</text>
+        <circle cx="180" cy="240" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="420" cy="240" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="240" cy="185" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="360" cy="185" r="16" class="player" fill="var(--def)"></circle>
+      `, note:"One rusher, two flats, two deeps. Rally and pull flags; no freebies behind the last line."},
+      {name:"6v6 Man + Safety", build:()=>`
+        <rect x="60" y="130" width="480" height="40" class="zone"></rect>
+        <circle cx="120" cy="255" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="210" cy="255" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="300" cy="255" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="390" cy="255" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="480" cy="255" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="300" cy="150" r="16" class="player" fill="var(--def)"></circle><text x="300" y="154" class="bubble" text-anchor="middle">S</text>
+      `, note:"Five in man; single‑high safety. Switch on crossers if kids lose leverage."}
+    ],
+    "7": [
+      {name:"7v7 2 Rush, 2‑2‑1 Zone", build:()=>`
+        <rect x="60" y="235" width="480" height="40" class="zone"></rect>
+        <rect x="60" y="185" width="480" height="40" class="zone"></rect>
+        <rect x="60" y="135" width="480" height="40" class="zone"></rect>
+        <circle cx="260" cy="300" r="16" class="player" fill="var(--def)"></circle><text x="260" y="304" class="bubble" text-anchor="middle">R</text>
+        <circle cx="340" cy="300" r="16" class="player" fill="var(--def)"></circle><text x="340" y="304" class="bubble" text-anchor="middle">R</text>
+        <circle cx="180" cy="255" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="420" cy="255" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="220" cy="205" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="380" cy="205" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="300" cy="155" r="16" class="player" fill="var(--def)"></circle>
+      `, note:"Two rushers, two flats, two mids, one deep. Don’t let anyone behind the deepest player."},
+      {name:"7v7 Match Zone (Rip/Liz)", build:()=>`
+        <rect x="60" y="210" width="480" height="40" class="zone"></rect>
+        <rect x="60" y="160" width="480" height="40" class="zone"></rect>
+        <circle cx="300" cy="300" r="16" class="player" fill="var(--def)"></circle><text x="300" y="304" class="bubble" text-anchor="middle">R</text>
+        <circle cx="140" cy="230" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="260" cy="230" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="340" cy="230" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="460" cy="230" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="220" cy="180" r="16" class="player" fill="var(--def)"></circle>
+        <circle cx="380" cy="180" r="16" class="player" fill="var(--def)"></circle>
+      `, note:"Underneath zones pass off routes, match receivers in your area. Rusher forces quick throws."}
+    ]
+  };
+  function renderDefense(){
+    const fmt = $("#format").value;
+    const grid = $("#defGrid");
+    grid.innerHTML = "";
+    DEF_BUILDS[fmt].forEach(d=>{
+      const card = document.createElement("div");
+      card.className="panel";
+      card.innerHTML = `
+        <h3 style="margin:4px 0">${d.name}</h3>
+        <div class="field-wrap"><div class="field"><div class="sideline"></div>
+          <svg viewBox="0 0 600 360">
+            ${d.build()}
+          </svg>
+        </div></div>
+        <p class="muted" style="margin-top:6px">${d.note}</p>
+      `;
+      grid.appendChild(card);
+    });
+  }
+  $$(".tab").forEach(btn=>btn.addEventListener("click", ()=>{
+    $$(".tab").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    ["offense","rotations","defense","tips"].forEach(id=>$("#"+id).style.display = "none");
+    $("#"+btn.dataset.tab).style.display = "block";
+    if(btn.dataset.tab==="rotations") renderRotation();
+    if(btn.dataset.tab==="defense") renderDefense();
+  }));
+  function buildInitialInputs(){
+    const roster = parseInt($("#roster").value,10);
+    const container = $("#initials");
+    container.innerHTML = "";
+    for(let i=1;i<=roster;i++){
+      const inp = document.createElement("input");
+      inp.placeholder = `#${i} ABC`;
+      inp.id = "init-"+i;
+      inp.maxLength = 3;
+      container.appendChild(inp);
+    }
+  }
+  function buildSeriesOptions(){
+    const roster = parseInt($("#roster").value,10);
+    const sel = $("#series");
+    sel.innerHTML = "";
+    for(let i=1;i<=roster;i++){
+      const opt = document.createElement("option");
+      opt.value = i; opt.textContent = i;
+      sel.appendChild(opt);
+    }
+  }
+  function applyAll(){ renderPlays(); renderRotation(); renderDefense(); }
+  $("#apply").addEventListener("click", applyAll);
+  $("#format").addEventListener("change", applyAll);
+  $("#roster").addEventListener("change", ()=>{ buildInitialInputs(); buildSeriesOptions(); applyAll(); });
+  $("#series").addEventListener("change", renderPlays);
+  $("#idMode").addEventListener("change", renderPlays);
+  buildInitialInputs(); buildSeriesOptions(); applyAll();
+</script>
+</body>
+</html>
