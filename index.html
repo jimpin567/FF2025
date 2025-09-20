@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flag Football — Hybrid (Solid Routes, Full Assignments)</title>
+<title>Flag Football — Hybrid (12 Plays, Solid & Longer)</title>
 <style>
   :root{
     --bg:#0b0f14; --card:#121820; --ink:#eaf2ff; --muted:#a9b8cc; --accent:#66b2ff;
@@ -16,22 +16,22 @@
   header{padding:14px 16px;border-bottom:1px solid #1e2835}
   h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
   nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  nav button{padding:8px 10px;border-radius:10px;background:#101522;border:1px solid #2a3a4f;color:var(--ink)}
+  nav button{padding:8px 10px;border-radius:10px;background:#101522;border:1px solid #2a3a4f;color:var(--ink);cursor:pointer}
   nav button.active{background:var(--accent);color:#002b55;border-color:var(--accent)}
   main{padding:12px;max-width:1100px;margin:0 auto}
   .panel{background:var(--card);border:1px solid #1e2835;border-radius:12px;padding:12px;margin:10px 0}
   .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   select,input,button{background:#101522;color:var(--ink);border:1px solid #25405f;border-radius:10px;padding:10px 12px}
-  button.primary{background:var(--accent);color:#002b55;border-color:var(--accent);font-weight:700}
-  .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #2a3a4f;color:var(--muted);font-size:12px}
+  button.primary{background:var(--accent);color:#002b55;border-color:var(--accent);font-weight:700;cursor:pointer}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #3b4d66;color:#a9b8cc;font-size:12px}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .legend .pill{border-color:#3b4d66}
-  .kmeta{font-size:12px;color:var(--muted)}
+  .kmeta{font-size:12px;color:#a9b8cc}
+
   /* Board tiles */
   .assign{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
   @media(min-width:520px){.assign{grid-template-columns:repeat(3,1fr)}}
   .tile{border-radius:12px;padding:12px;border:1px solid #2a3a4f}
-  .tile h4{margin:0 0 6px 0;font-size:14px;color:var(--muted)}
+  .tile h4{margin:0 0 6px 0;font-size:14px;color:#a9b8cc}
   .big{font-size:28px;font-weight:800}
   .role-QB{background:#1e88e520;border-color:#1f4d80}
   .role-C{background:#6d4c4120;border-color:#5d4037}
@@ -39,31 +39,31 @@
   .role-Slot{background:#fbc02d20;border-color:#b28900}
   .role-RB{background:#8e24aa20;border-color:#6a1b9a}
   .role-Flex{background:#26a69a20;border-color:#0d6b62}
+
   /* Field + routes */
   .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:8px;border:2px solid #123814}
-  .field{height:380px;position:relative;background:repeating-linear-gradient(to bottom, transparent 0, transparent 36px, rgba(255,255,255,.12) 36px, rgba(255,255,255,.12) 38px);border-radius:10px}
+  .field{height:420px;position:relative;background:repeating-linear-gradient(to bottom, transparent 0, transparent 36px, rgba(255,255,255,.12) 36px, rgba(255,255,255,.12) 38px);border-radius:10px}
   .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:10px}
   svg{width:100%;height:100%;display:block}
   .player{stroke:#0008;stroke-width:1.2px}
   .bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}
   .role-lbl{font-size:11px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.8px}
-  .route{fill:none;stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+  .route{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
   .route.alt{stroke:#ffeb3b}
-  .arrow{fill:#fff;stroke:#000;stroke-width:.6}
+  .arrow{fill:#fff;stroke:#000;stroke-width:.8}
   .arrow.alt{fill:#ffeb3b}
   .grid{display:grid;grid-template-columns:1fr;gap:10px}
   @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
-  .muted{color:var(--muted);font-size:12px}
+  .muted{color:#a9b8cc;font-size:12px}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{border:1px solid #2a3a4f;padding:6px;text-align:center}
   th{background:#101522}
-  @media print{ nav,.controls{display:none} .panel{box-shadow:none} }
 </style>
 </head>
 <body>
 <header>
   <h1>Flag Football — Hybrid</h1>
-  <div class="sub">Solid routes for every position + interactive rotation board. Formats: 5v5 / 6v6 / 7v7.</div>
+  <div class="sub">Board + 12 Plays with longer solid routes • Formats: 5v5 / 6v6 / 7v7</div>
   <nav>
     <button class="tab active" data-tab="board">Board</button>
     <button class="tab" data-tab="plays">Plays</button>
@@ -109,7 +109,7 @@
 
   <!-- BOARD -->
   <section id="board" class="panel">
-    <div class="row legend">
+    <div class="row">
       <span class="pill">QB</span><span class="pill">C</span><span class="pill">WR-L</span><span class="pill">WR-R</span><span class="pill">Slot</span><span class="pill">RB</span><span class="pill">Flex</span>
     </div>
     <div class="assign" id="assignGrid"></div>
@@ -118,15 +118,13 @@
 
   <!-- PLAYS -->
   <section id="plays" class="panel" style="display:none">
-    <div class="legend">
-      <span class="pill">Tap Next/Prev to update overlays. All positions have routes.</span>
-    </div>
+    <div class="row"><span class="pill">12-play list • Solid, longer routes • Overlays update with Prev/Next</span></div>
     <div class="grid" id="playGrid"></div>
   </section>
 
   <!-- ROTATIONS -->
   <section id="rotations" class="panel" style="display:none">
-    <h3>Equal‑time Rotation</h3>
+    <h3>Equal-time Rotation</h3>
     <div id="rotationTable"></div>
   </section>
 
@@ -140,9 +138,9 @@
   <section id="tips" class="panel" style="display:none">
     <h3>Game Management</h3>
     <ul>
-      <li><b>Cadence:</b> “Huddle here” → play name → “On GO” → “Series X on.”</li>
-      <li><b>Landmarks:</b> cones at 5 & 10 yards for depth.</li>
-      <li><b>Fairness:</b> rotation is math; every player is QB once per cycle.</li>
+      <li><b>Series flow:</b> Same series plays both ways; on change of possession, tap <b>Next ▶</b>.</li>
+      <li><b>Landmarks:</b> cones at 5 & 10 yards = depth cues kids can see.</li>
+      <li><b>Fairness:</b> rotation is math; everyone plays QB once per full cycle.</li>
     </ul>
   </section>
 </main>
@@ -151,191 +149,175 @@
   const $ = s=>document.querySelector(s);
   const $$ = s=>Array.from(document.querySelectorAll(s));
 
+  // Base spots for bubbles
   const POS_BASE = [
-    {key:"QB", color:"var(--qb)", x:300, y:340},
-    {key:"C", color:"var(--center)", x:300, y:306},
-    {key:"WR-L", color:"var(--wr)", x:180, y:306},
-    {key:"WR-R", color:"var(--wr)", x:420, y:306},
-    {key:"Slot", color:"var(--slot)", x:240, y:318},
-    {key:"RB", color:"var(--rb)", x:360, y:318},
-    {key:"Flex", color:"var(--flex)", x:300, y:282} // 7v7
+    {key:"QB",   color:"var(--qb)",    x:300, y:360},
+    {key:"C",    color:"var(--center)",x:300, y:330},
+    {key:"WR-L", color:"var(--wr)",    x:180, y:330},
+    {key:"WR-R", color:"var(--wr)",    x:420, y:330},
+    {key:"Slot", color:"var(--slot)",  x:240, y:344},
+    {key:"RB",   color:"var(--rb)",    x:360, y:344},
+    {key:"Flex", color:"var(--flex)",  x:300, y:304} // 7v7 only
   ];
+
   function positionsForFormat(fmt){
     if(fmt==5) return ["QB","C","WR-L","WR-R","RB"];
     if(fmt==6) return ["QB","C","WR-L","WR-R","Slot","RB"];
     return ["QB","C","WR-L","WR-R","Slot","RB","Flex"];
   }
+
+  // Round-robin equal rotation: each series shifts order, ensures everyone plays QB once per full cycle
   function rotationRows(roster, fmt){
     const players = Array.from({length: roster}, (_,i)=> i+1);
     const rows = [];
     for(let s=0;s<roster;s++){
-      const order = players.map((p,idx)=> players[(idx+s)%roster]);
-      const lineup = {}; const pkeys = positionsForFormat(fmt);
-      for(let i=0;i<pkeys.length;i++){ lineup[pkeys[i]] = order[i]; }
-      rows.push({series:s+1, lineup, bench: order.slice(fmt)});
+      const order = players.map((_,i)=> players[(i+s)%roster]);
+      const lineup = {}; const keys=positionsForFormat(fmt);
+      for(let i=0;i<keys.length;i++) lineup[keys[i]] = order[i];
+      rows.push({series:s+1, lineup, bench: order.slice(keys.length)});
     }
     return rows;
   }
+
   function buildInitials(){
-    const roster = parseInt($("#roster").value,10);
+    const n = parseInt($("#roster").value,10);
     const box = $("#initials"); box.innerHTML="";
-    for(let i=1;i<=roster;i++){
+    for(let i=1;i<=n;i++){
       const inp=document.createElement("input");
       inp.placeholder="#"+i+" ABC"; inp.id="init-"+i; inp.maxLength=3; inp.style.width="78px";
       box.appendChild(inp);
     }
   }
+
   function initialsMap(){
-    const roster = parseInt($("#roster").value,10); const map={};
-    for(let i=1;i<=roster;i++){ map[i]=($("#init-"+i)?.value||"").toUpperCase().slice(0,3); }
+    const n = parseInt($("#roster").value,10), map={};
+    for(let i=1;i<=n;i++){ map[i]=($("#init-"+i)?.value||"").toUpperCase().slice(0,3); }
     return map;
   }
-  function playerBubble(pos, text, showRole){
-    return `
-      <circle cx="${pos.x}" cy="${pos.y}" r="16" class="player" fill="${pos.color}"></circle>
-      <text x="${pos.x}" y="${pos.y+4}" text-anchor="middle" class="bubble">${text}</text>
-      ${showRole?`<text x="${pos.x}" y="${pos.y+18}" text-anchor="middle" class="role-lbl">${pos.key.replace('-L',' L').replace('-R',' R')}</text>`:''}
-    `;
-  }
 
-  // Solid-route builders: return SVG for ALL positions present
+  // ---- Route builders (solid, visually longer by ~5–10 yards) ----
   const ROUTES = {
-    go: fmt => {
-      const seg = [];
-      // WR-L & WR-R go routes
-      seg.push(`<path d="M180 306 C180 260 180 220 180 180" class="route"></path><polygon points="180,168 172,180 188,180" class="arrow"></polygon>`);
-      seg.push(`<path d="M420 306 C420 260 420 220 420 180" class="route"></path><polygon points="420,168 412,180 428,180" class="arrow"></polygon>`);
-      // Center quick sit at 5 yds
-      seg.push(`<path d="M300 306 C300 296 300 290 300 286" class="route"></path><polygon points="300,278 292,286 308,286" class="arrow"></polygon>`);
-      // RB check to flat right
-      seg.push(`<path d="M360 318 C380 316 395 316 410 316" class="route"></path><polygon points="420,316 410,308 410,324" class="arrow"></polygon>`);
-      if(fmt>=6){ // Slot short out
-        seg.push(`<path d="M240 318 C260 314 280 312 300 312" class="route alt"></path><polygon points="310,312 300,304 300,320" class="arrow alt"></polygon>`);
+    // Core 6
+    go: fmt => `
+      <path d="M180 330 V165" class="route"></path><polygon points="180,153 170,165 190,165" class="arrow"></polygon>
+      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
+      <path d="M300 330 V288" class="route"></path><polygon points="300,278 290,288 310,288" class="arrow"></polygon>
+      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 H318" class="route alt"></path><polygon points="328,344 318,336 318,352" class="arrow alt"></polygon>`:""}
+      ${fmt>=7?`<path d="M300 304 C300 270 325 240 362 212" class="route"></path><polygon points="370,206 358,210 364,218" class="arrow"></polygon>`:""}
+    `,
+    slants: fmt => `
+      <path d="M180 330 C205 300 235 278 270 260" class="route"></path><polygon points="278,256 266,260 272,268" class="arrow"></polygon>
+      <path d="M420 330 C395 300 365 278 330 260" class="route"></path><polygon points="322,256 328,268 334,260" class="arrow"></polygon>
+      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
+      <path d="M360 344 C340 344 320 346 300 350" class="route"></path><polygon points="292,352 302,344 302,356" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 C258 324 286 306 312 292" class="route alt"></path><polygon points="321,288 309,292 317,298" class="arrow alt"></polygon>`:""}
+      ${fmt>=7?`<path d="M300 304 V188" class="route"></path><polygon points="300,178 290,188 310,188" class="arrow"></polygon>`:""}
+    `,
+    smash: fmt => `
+      <path d="M420 330 V292" class="route"></path><polygon points="420,282 410,292 430,292" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 C274 324 320 306 366 294 C398 280 424 262 446 244" class="route alt"></path><polygon points="454,238 442,240 448,248" class="arrow alt"></polygon>`:""}
+      <path d="M180 330 V198" class="route"></path><polygon points="180,188 170,198 190,198" class="arrow"></polygon>
+      <path d="M300 330 H364" class="route"></path><polygon points="374,330 364,322 364,338" class="arrow"></polygon>
+      <path d="M360 344 C352 340 344 336 336 334" class="route"></path>
+      ${fmt>=7?`<path d="M300 304 C300 284 280 270 252 258" class="route"></path><polygon points="244,254 255,257 249,265" class="arrow"></polygon>`:""}
+    `,
+    flood: fmt => `
+      <path d="M420 330 V190" class="route"></path><polygon points="420,180 410,190 430,190" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 H370" class="route alt"></path><polygon points="380,344 370,336 370,352" class="arrow alt"></polygon>`:""}
+      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
+      <path d="M180 330 C220 330 270 338 320 352" class="route"></path><polygon points="330,354 320,346 320,360" class="arrow"></polygon>
+      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
+      ${fmt>=7?`<path d="M300 304 C322 286 358 270 400 252" class="route"></path><polygon points="408,248 396,250 402,258" class="arrow"></polygon>`:""}
+    `,
+    cross: fmt => `
+      <path d="M180 330 C224 330 276 340 328 356" class="route"></path><polygon points="338,358 328,350 328,364" class="arrow"></polygon>
+      <path d="M420 330 C376 330 324 340 272 356" class="route"></path><polygon points="262,358 272,350 272,364" class="arrow"></polygon>
+      <path d="M300 330 V278" class="route"></path><polygon points="300,268 290,278 310,278" class="arrow"></polygon>
+      <path d="M360 344 C360 326 344 314 322 310" class="route"></path><polygon points="314,308 324,310 320,318" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 C268 344 296 350 324 358" class="route alt"></path><polygon points="334,360 324,352 324,366" class="arrow alt"></polygon>`:""}
+      ${fmt>=7?`<path d="M300 304 C300 286 316 274 340 266" class="route"></path><polygon points="348,264 338,266 343,274" class="arrow"></polygon>`:""}
+    `,
+    jet: fmt => `
+      ${fmt>=6
+        ?`<path d="M240 344 H130" class="route alt"></path><polygon points="120,344 130,336 130,352" class="arrow alt"></polygon>`
+        :`<path d="M360 344 H190" class="route alt"></path><polygon points="180,344 190,336 190,352" class="arrow alt"></polygon>`
       }
-      if(fmt>=7){ // Flex deep post
-        seg.push(`<path d="M300 282 C300 260 320 240 350 220" class="route"></path><polygon points="358,214 346,218 352,226" class="arrow"></polygon>`);
-      }
-      // QB rollout marker (short step)
-      seg.push(`<path d="M300 340 C315 338 330 336 340 334" class="route"></path>`);
-      return seg.join("");
-    },
-    slants: fmt => {
-      const seg=[];
-      seg.push(`<path d="M180 306 C195 290 215 275 240 260" class="route"></path><polygon points="248,255 236,258 242,266" class="arrow"></polygon>`);
-      seg.push(`<path d="M420 306 C405 290 385 275 360 260" class="route"></path><polygon points="352,255 358,266 364,258" class="arrow"></polygon>`);
-      // Center settle
-      seg.push(`<path d="M300 306 C300 294 300 286 300 278" class="route"></path><polygon points="300,270 292,278 308,278" class="arrow"></polygon>`);
-      // RB swing left
-      seg.push(`<path d="M360 318 C340 318 320 320 300 324" class="route"></path><polygon points="292,326 302,318 302,330" class="arrow"></polygon>`);
-      if(fmt>=6){ // Slot quick slant
-        seg.push(`<path d="M240 318 C252 306 270 294 290 284" class="route alt"></path><polygon points="298,280 286,284 294,290" class="arrow alt"></polygon>`);
-      }
-      if(fmt>=7){ // Flex seam
-        seg.push(`<path d="M300 282 C300 250 300 220 300 190" class="route"></path><polygon points="300,180 292,190 308,190" class="arrow"></polygon>`);
-      }
-      // QB set
-      seg.push(`<path d="M300 340 C300 336 302 334 304 333" class="route"></path>`);
-      return seg.join("");
-    },
-    smash: fmt => {
-      const seg=[];
-      // WR-R hitch (curl)
-      seg.push(`<path d="M420 306 C420 296 420 288 420 282" class="route"></path><polygon points="420,274 412,282 428,282" class="arrow"></polygon>`);
-      // Slot corner
-      if(fmt>=6){
-        seg.push(`<path d="M240 318 C260 306 300 292 340 282 C370 272 395 258 415 242" class="route alt"></path><polygon points="423,236 412,240 418,248" class="arrow alt"></polygon>`);
-      }
-      // WR-L go to clear
-      seg.push(`<path d="M180 306 C180 270 180 235 180 200" class="route"></path><polygon points="180,190 172,200 188,200" class="arrow"></polygon>`);
-      // Center quick out
-      seg.push(`<path d="M300 306 C315 304 330 304 345 304" class="route"></path><polygon points="355,304 345,296 345,312" class="arrow"></polygon>`);
-      // RB check middle
-      seg.push(`<path d="M360 318 C350 316 340 314 330 312" class="route"></path>`);
-      if(fmt>=7){ // Flex dig
-        seg.push(`<path d="M300 282 C300 270 285 260 260 250" class="route"></path><polygon points="252,246 263,249 257,257" class="arrow"></polygon>`);
-      }
-      // QB slight roll right
-      seg.push(`<path d="M300 340 C320 338 335 336 350 334" class="route"></path>`);
-      return seg.join("");
-    },
-    flood: fmt => {
-      const seg=[];
-      // WR-R deep sideline
-      seg.push(`<path d="M420 306 C420 270 420 235 420 200" class="route"></path><polygon points="420,190 412,200 428,200" class="arrow"></polygon>`);
-      // Slot out (mid)
-      if(fmt>=6){
-        seg.push(`<path d="M240 318 C270 314 310 312 350 312" class="route alt"></path><polygon points="360,312 350,304 350,320" class="arrow alt"></polygon>`);
-      }
-      // RB short flat
-      seg.push(`<path d="M360 318 C380 316 395 316 410 316" class="route"></path><polygon points="420,316 410,308 410,324" class="arrow"></polygon>`);
-      // WR-L drag shallow to right
-      seg.push(`<path d="M180 306 C210 306 250 310 300 318" class="route"></path><polygon points="310,320 300,312 300,326" class="arrow"></polygon>`);
-      // Center settle
-      seg.push(`<path d="M300 306 C300 294 300 286 300 278" class="route"></path><polygon points="300,270 292,278 308,278" class="arrow"></polygon>`);
-      if(fmt>=7){ // Flex corner/deep
-        seg.push(`<path d="M300 282 C315 268 345 255 380 240" class="route"></path><polygon points="388,236 376,239 382,247" class="arrow"></polygon>`);
-      }
-      // QB roll right
-      seg.push(`<path d="M300 340 C320 338 340 336 355 334" class="route"></path>`);
-      return seg.join("");
-    },
-    cross: fmt => {
-      const seg=[];
-      // WR crossers
-      seg.push(`<path d="M180 306 C210 306 250 312 300 324" class="route"></path><polygon points="310,326 300,318 300,332" class="arrow"></polygon>`);
-      seg.push(`<path d="M420 306 C390 306 350 312 300 324" class="route"></path><polygon points="290,326 300,318 300,332" class="arrow"></polygon>`);
-      // Center sit
-      seg.push(`<path d="M300 306 C300 292 300 284 300 276" class="route"></path><polygon points="300,268 292,276 308,276" class="arrow"></polygon>`);
-      // RB checkdown hook
-      seg.push(`<path d="M360 318 C360 308 350 300 335 296" class="route"></path><polygon points="328,294 338,296 333,304" class="arrow"></polygon>`);
-      if(fmt>=6){ // Slot shallow cross
-        seg.push(`<path d="M240 318 C260 318 280 320 300 324" class="route alt"></path><polygon points="310,326 300,318 300,332" class="arrow alt"></polygon>`);
-      }
-      if(fmt>=7){ // Flex sit middle
-        seg.push(`<path d="M300 282 C300 268 310 258 325 252" class="route"></path><polygon points="332,250 322,252 327,260" class="arrow"></polygon>`);
-      }
-      // QB set
-      seg.push(`<path d="M300 340 C300 336 302 334 304 333" class="route"></path>`);
-      return seg.join("");
-    },
-    jet: fmt => {
-      const seg=[];
-      // Slot jet sweep; if 5v5 (no Slot), RB takes jet
-      if(fmt>=6){
-        seg.push(`<path d="M240 318 C220 318 200 318 180 318 165 318 150 320 135 324" class="route alt"></path><polygon points="126,326 136,321 136,335" class="arrow alt"></polygon>`);
-      } else {
-        seg.push(`<path d="M360 318 C340 318 320 318 300 318 280 318 260 318 240 318 225 318 210 320 195 324" class="route alt"></path><polygon points="186,326 196,321 196,335" class="arrow alt"></polygon>`);
-      }
-      // WRs run clears
-      seg.push(`<path d="M180 306 C180 270 180 235 180 200" class="route"></path><polygon points="180,190 172,200 188,200" class="arrow"></polygon>`);
-      seg.push(`<path d="M420 306 C420 270 420 235 420 200" class="route"></path><polygon points="420,190 412,200 428,200" class="arrow"></polygon>`);
-      // Center quick seal (short out)
-      seg.push(`<path d="M300 306 C315 304 330 304 345 304" class="route"></path><polygon points="355,304 345,296 345,312" class="arrow"></polygon>`);
-      // RB fake check (if Slot jets)
-      seg.push(`<path d="M360 318 C360 312 355 308 348 306" class="route"></path>`);
-      if(fmt>=7){ // Flex backside dig
-        seg.push(`<path d="M300 282 C290 276 275 270 260 266" class="route"></path><polygon points="252,264 262,265 258,273" class="arrow"></polygon>`);
-      }
-      // QB handoff path
-      seg.push(`<path d="M300 340 C290 338 280 336 270 334" class="route"></path>`);
-      return seg.join("");
-    }
+      <path d="M180 330 V185" class="route"></path><polygon points="180,175 170,185 190,185" class="arrow"></polygon>
+      <path d="M420 330 V185" class="route"></path><polygon points="420,175 410,185 430,185" class="arrow"></polygon>
+      <path d="M300 330 H365" class="route"></path><polygon points="375,330 365,322 365,338" class="arrow"></polygon>
+      <path d="M360 344 C355 340 350 338 344 336" class="route"></path>
+      ${fmt>=7?`<path d="M300 304 C288 296 270 288 252 282" class="route"></path><polygon points="244,280 254,282 250,290" class="arrow"></polygon>`:""}
+    `,
+
+    // Plus 6 more
+    levels: fmt => `
+      <path d="M180 330 C180 280 210 250 260 235" class="route"></path><polygon points="268,233 258,235 263,243" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 C260 344 290 350 320 358" class="route alt"></path><polygon points="330,360 320,352 320,366" class="arrow alt"></polygon>`:""}
+      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
+      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
+      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
+      ${fmt>=7?`<path d="M300 304 V188" class="route"></path><polygon points="300,178 290,188 310,188" class="arrow"></polygon>`:""}
+    `,
+    tripsflood: fmt => `
+      <path d="M180 330 V185" class="route"></path><polygon points="180,175 170,185 190,185" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 H170" class="route alt"></path><polygon points="160,344 170,336 170,352" class="arrow alt"></polygon>`:""}
+      <path d="M360 344 H280" class="route"></path><polygon points="270,344 280,336 280,352" class="arrow"></polygon>
+      <path d="M420 330 C395 300 365 278 330 260" class="route"></path><polygon points="322,256 328,268 334,260" class="arrow"></polygon>
+      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
+      ${fmt>=7?`<path d="M300 304 C316 288 346 274 382 260" class="route"></path><polygon points="390,256 378,258 384,266" class="arrow"></polygon>`:""}
+    `,
+    centerrelease: fmt => `
+      <path d="M300 330 V210" class="route"></path><polygon points="300,200 290,210 310,210" class="arrow"></polygon>
+      <path d="M180 330 V165" class="route"></path><polygon points="180,153 170,165 190,165" class="arrow"></polygon>
+      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 H318" class="route alt"></path><polygon points="328,344 318,336 318,352" class="arrow alt"></polygon>`:""}
+      <path d="M360 344 C348 340 340 334 334 326" class="route"></path>
+      ${fmt>=7?`<path d="M300 304 C300 286 286 274 266 266" class="route"></path><polygon points="258,264 268,266 264,274" class="arrow"></polygon>`:""}
+    `,
+    fourverts: fmt => `
+      <path d="M180 330 V165" class="route"></path><polygon points="180,153 170,165 190,165" class="arrow"></polygon>
+      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 V185" class="route alt"></path><polygon points="240,175 230,185 250,185" class="arrow alt"></polygon>`:""}
+      ${fmt>=7?`<path d="M300 304 V175" class="route"></path><polygon points="300,165 290,175 310,175" class="arrow"></polygon>`:""}
+      <path d="M300 330 V210" class="route"></path><polygon points="300,200 290,210 310,210" class="arrow"></polygon>
+      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
+    `,
+    scissors: fmt => `
+      <path d="M180 330 C200 300 240 270 300 250" class="route"></path><polygon points="308,248 298,250 303,258" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 C270 330 320 314 380 300" class="route alt"></path><polygon points="390,298 380,290 380,304" class="arrow alt"></polygon>`:""}
+      ${fmt>=7?`<path d="M300 304 V175" class="route"></path><polygon points="300,165 290,175 310,175" class="arrow"></polygon>`:""}
+      <path d="M420 330 V292" class="route"></path><polygon points="420,282 410,292 430,292" class="arrow"></polygon>
+      <path d="M360 344 H320" class="route"></path><polygon points="310,344 320,336 320,352" class="arrow"></polygon>
+      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
+    `,
+    mesh: fmt => `
+      <path d="M180 330 C220 330 268 340 316 356" class="route"></path><polygon points="326,358 316,350 316,364" class="arrow"></polygon>
+      ${fmt>=6?`<path d="M240 344 C280 344 328 352 376 366" class="route alt"></path><polygon points="386,368 376,360 376,374" class="arrow alt"></polygon>`:""}
+      <path d="M420 330 C382 330 334 340 286 356" class="route"></path><polygon points="276,358 286,350 286,364" class="arrow"></polygon>
+      ${fmt>=7?`<path d="M300 304 C320 296 344 288 368 282" class="route"></path><polygon points="376,280 366,282 371,290" class="arrow"></polygon>`:""}
+      <path d="M300 330 V278" class="route"></path><polygon points="300,268 290,278 310,278" class="arrow"></polygon>
+      <path d="M360 344 H420" class="route"></path><polygon points="430,344 420,336 420,352" class="arrow"></polygon>
+    `
   };
 
-  const PLAYS = [
+  const PLAY_LIST = [
     {name:"Double Go", key:"go"},
     {name:"Quick Slants", key:"slants"},
     {name:"Smash", key:"smash"},
     {name:"Flood", key:"flood"},
     {name:"Crossers", key:"cross"},
-    {name:"Jet Sweep", key:"jet"}
+    {name:"Jet Sweep", key:"jet"},
+    {name:"Levels", key:"levels"},
+    {name:"Trips Flood", key:"tripsflood"},
+    {name:"Center Release", key:"centerrelease"},
+    {name:"Four Verticals", key:"fourverts"},
+    {name:"Scissors", key:"scissors"},
+    {name:"Mesh", key:"mesh"}
   ];
 
   let currentSeries = 1;
 
-  function metaUpdate(rows, fmt, roster){
-    $("#meta").textContent = `Series ${currentSeries} of ${rows.length} • Everyone at QB once • Bench per series: ${roster - fmt}`;
-  }
   function renderBoard(){
     const fmt = parseInt($("#format").value,10);
     const roster = parseInt($("#roster").value,10);
@@ -344,31 +326,33 @@
     const rows = rotationRows(roster, fmt);
     if(currentSeries>rows.length) currentSeries=1;
     const row = rows[currentSeries-1];
-    metaUpdate(rows, fmt, roster);
+    $("#meta").textContent = `Series ${currentSeries} of ${rows.length} • Everyone at QB once • Bench per series: ${roster - fmt}`;
+
     const grid=$("#assignGrid"); grid.innerHTML="";
     positionsForFormat(fmt).forEach(pos=>{
       const num=row.lineup[pos];
       const label=(idMode==="initials" && init[num])? init[num] : (idMode==="off"?"":num);
-      const tile=document.createElement("div");
       const roleClass="role-"+pos.replace("-","").replace("WRL","WR").replace("WRR","WR");
+      const tile=document.createElement("div");
       tile.className="tile "+roleClass;
       tile.innerHTML=`<h4>${pos}</h4><div class="big">${label}</div>`;
       grid.appendChild(tile);
     });
     $("#benchRow").textContent = row.bench.length ? "Bench: "+row.bench.join(", ") : "Bench: —";
   }
+
   function renderPlays(){
     const fmt = parseInt($("#format").value,10);
     const roster = parseInt($("#roster").value,10);
+    const idMode = $("#idMode").value;
+    const init = initialsMap();
     const rows = rotationRows(roster, fmt);
     if(currentSeries>rows.length) currentSeries=1;
     const row = rows[currentSeries-1];
-    const idMode = $("#idMode").value;
-    const init = initialsMap();
+
     const grid=$("#playGrid"); grid.innerHTML="";
-    PLAYS.forEach(p=>{
-      const card=document.createElement("div");
-      card.className="panel";
+    PLAY_LIST.forEach(p=>{
+      // Player bubbles (with optional numbers/initials)
       const bubbles = positionsForFormat(fmt).map(k=>{
         const pos = POS_BASE.find(pp=>pp.key===k);
         const num = row.lineup[k];
@@ -381,10 +365,13 @@
           <text x="${pos.x}" y="${pos.y+18}" text-anchor="middle" class="role-lbl">${pos.key.replace('-L',' L').replace('-R',' R')}</text>
         `;
       }).join("");
+
+      const card=document.createElement("div");
+      card.className="panel";
       card.innerHTML=`
         <h3 style="margin:4px 0">${p.name}</h3>
         <div class="field-wrap"><div class="field"><div class="sideline"></div>
-          <svg viewBox="0 0 600 380">
+          <svg viewBox="0 0 600 420">
             ${bubbles}
             ${ROUTES[p.key](fmt)}
           </svg>
@@ -393,6 +380,7 @@
       grid.appendChild(card);
     });
   }
+
   function renderRotation(){
     const fmt = parseInt($("#format").value,10);
     const roster = parseInt($("#roster").value,10);
@@ -406,7 +394,7 @@
     $("#rotationTable").innerHTML=html;
   }
 
-  // Simple defense stays from previous hybrid (omitted for brevity here); keep two options per format
+  // Simple defense cards
   const DEF = {
     "5":[
       {name:"5v5 Base Zone (2 Rush, 3 Across)", svg:`
@@ -417,7 +405,7 @@
         <circle cx="180" cy="235" r="16" class="player" fill="var(--def)"></circle>
         <circle cx="300" cy="205" r="16" class="player" fill="var(--def)"></circle>
         <circle cx="420" cy="235" r="16" class="player" fill="var(--def)"></circle>
-      `,note:"Rush two; three across play eyes on QB and rally forward."},
+      `,note:"Rush two; three across. Don't get beat deep."},
       {name:"5v5 Man + Safety", svg:`
         <rect x="60" y="120" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
         <circle cx="140" cy="260" r="16" class="player" fill="var(--def)"></circle>
@@ -428,7 +416,7 @@
       `,note:"Four in man; one deep safety keeps the lid on."}
     ],
     "6":[
-      {name:"6v6 1 Rush, 2‑3 Zone", svg:`
+      {name:"6v6 1 Rush, 2 Flats, 2 Deep", svg:`
         <rect x="60" y="220" width="480" height="45" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
         <rect x="60" y="165" width="480" height="45" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
         <circle cx="300" cy="305" r="16" class="player" fill="var(--def)"></circle><text x="300" y="309" class="bubble" text-anchor="middle">R</text>
@@ -436,7 +424,7 @@
         <circle cx="420" cy="240" r="16" class="player" fill="var(--def)"></circle>
         <circle cx="240" cy="185" r="16" class="player" fill="var(--def)"></circle>
         <circle cx="360" cy="185" r="16" class="player" fill="var(--def)"></circle>
-      `,note:"Flats + deeps; no freebies behind last line."},
+      `,note:"Flats & deeps; force throws underneath."},
       {name:"6v6 Man + Safety", svg:`
         <rect x="60" y="130" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
         <circle cx="120" cy="265" r="16" class="player" fill="var(--def)"></circle>
@@ -448,7 +436,7 @@
       `,note:"Five in man; single-high safety."}
     ],
     "7":[
-      {name:"7v7 2‑2‑1 Zone w/2 Rush", svg:`
+      {name:"7v7 2-2-1 Zone (2 Rush)", svg:`
         <rect x="60" y="235" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
         <rect x="60" y="185" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
         <rect x="60" y="135" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
@@ -482,7 +470,7 @@
       card.innerHTML=`
         <h3 style="margin:4px 0">${d.name}</h3>
         <div class="field-wrap"><div class="field"><div class="sideline"></div>
-          <svg viewBox="0 0 600 380">${d.svg}</svg>
+          <svg viewBox="0 0 600 420">${d.svg}</svg>
         </div></div>
         <p class="muted" style="margin-top:6px">${d.note}</p>
       `;
@@ -490,14 +478,9 @@
     });
   }
 
-  function initialsMap(){ const map={}; const roster=parseInt($("#roster").value,10);
-    for(let i=1;i<=roster;i++){ map[i]=($("#init-"+i)?.value||"").toUpperCase().slice(0,3); }
-    return map;
-  }
+  function renderAll(){ renderBoard(); renderPlays(); renderRotation(); if($("#defense").style.display!=="none") renderDefense(); }
 
-  function applyAll(){ renderBoard(); renderPlays(); renderRotation(); renderDefense(); }
-
-  // Tabs and events
+  // Tabs
   $$(".tab").forEach(btn=>btn.addEventListener("click", ()=>{
     $$(".tab").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
@@ -508,24 +491,17 @@
     if(btn.dataset.tab==="plays") renderPlays();
     if(btn.dataset.tab==="board") renderBoard();
   }));
-  $("#format").addEventListener("change", ()=>{ currentSeries=1; applyAll(); });
-  $("#roster").addEventListener("change", ()=>{ buildInitials(); currentSeries=1; applyAll(); });
-  $("#idMode").addEventListener("change", applyAll);
-  $("#nextBtn").addEventListener("click", ()=>{ currentSeries++; const r=parseInt($("#roster").value,10); if(currentSeries>r) currentSeries=1; applyAll(); });
-  $("#prevBtn").addEventListener("click", ()=>{ currentSeries--; const r=parseInt($("#roster").value,10); if(currentSeries<1) currentSeries=r; applyAll(); });
 
-  // init
-  function buildInitials(){
-    const roster = parseInt($("#roster").value,10);
-    const box = $("#initials"); box.innerHTML="";
-    for(let i=1;i<=roster;i++){
-      const inp=document.createElement("input");
-      inp.placeholder="#"+i+" ABC"; inp.id="init-"+i; inp.maxLength=3; inp.style.width="78px";
-      box.appendChild(inp);
-    }
-  }
+  // Controls
+  $("#format").addEventListener("change", ()=>{ currentSeries=1; renderAll(); });
+  $("#roster").addEventListener("change", ()=>{ buildInitials(); currentSeries=1; renderAll(); });
+  $("#idMode").addEventListener("change", renderAll);
+  $("#nextBtn").addEventListener("click", ()=>{ currentSeries++; const r=parseInt($("#roster").value,10); if(currentSeries>r) currentSeries=1; renderAll(); });
+  $("#prevBtn").addEventListener("click", ()=>{ currentSeries--; const r=parseInt($("#roster").value,10); if(currentSeries<1) currentSeries=r; renderAll(); });
+
+  // Init
   buildInitials();
-  applyAll();
+  renderAll();
 </script>
 </body>
 </html>
