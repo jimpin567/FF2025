@@ -3,13 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flag Football — Plays + Fair Rotations (7–10 players)</title>
+<title>Flag Football — NFL-style Plays + Fair Rotations (7–10 players)</title>
 <style>
   :root{
     --bg:#0b0f14; --card:#121820; --ink:#eaf2ff; --muted:#a9b8cc; --accent:#66b2ff;
     --field-green:#2e7d32; --field-green-dark:#1b5e20; --field-line:#e0f2f1;
     --qb:#1e88e5; --center:#6d4c41; --wr:#f4511e; --slot:#fbc02d; --rb:#8e24aa; --flex:#26a69a;
-    --def:#90caf9; --zone:#ffffff18;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
@@ -25,7 +24,6 @@
   button.primary{background:var(--accent);color:#002b55;border-color:var(--accent);font-weight:700;cursor:pointer}
   .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #3b4d66;color:#a9b8cc;font-size:12px}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .kmeta{font-size:12px;color:#a9b8cc}
   .muted{color:#a9b8cc;font-size:12px}
 
   /* Board tiles */
@@ -36,22 +34,24 @@
   .big{font-size:28px;font-weight:800}
   .role-QB{background:#1e88e520;border-color:#1f4d80}
   .role-C{background:#6d4c4120;border-color:#5d4037}
-  .role-WR{background:#f4511e20;border-color:#d84315}
-  .role-Slot{background:#fbc02d20;border-color:#b28900}
+  .role-X,.role-Z{background:#f4511e20;border-color:#d84315}
+  .role-Y{background:#fbc02d20;border-color:#b28900}
   .role-RB{background:#8e24aa20;border-color:#6a1b9a}
   .role-Flex{background:#26a69a20;border-color:#0d6b62}
 
   /* Field + routes */
   .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:8px;border:2px solid #123814}
-  .field{height:420px;position:relative;background:repeating-linear-gradient(to bottom, transparent 0, transparent 36px, rgba(255,255,255,.12) 36px, rgba(255,255,255,.12) 38px);border-radius:10px}
+  .field{height:420px;position:relative;background:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 36px, rgba(255,255,255,.12) 36px, rgba(255,255,255,.12) 38px);
+    border-radius:10px}
   .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:10px}
   svg{width:100%;height:100%;display:block}
   .player{stroke:#0008;stroke-width:1.2px}
   .bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}
   .role-lbl{font-size:11px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.8px}
-  .route{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+  .route{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
   .route.alt{stroke:#ffeb3b}
-  .arrow{fill:#fff;stroke:#000;stroke-width:.8}
+  .arrow{fill:#fff;stroke:#000;stroke-width:.9}
   .arrow.alt{fill:#ffeb3b}
 
   .grid{display:grid;grid-template-columns:1fr;gap:10px}
@@ -63,7 +63,7 @@
 </head>
 <body>
 <header>
-  <h1>Flag Football — Plays + Fair Rotations</h1>
+  <h1>Flag Football — NFL-style Plays + Fair Rotations</h1>
   <div class="sub">Rosters: 7–10 • Formats: 5v5 / 6v6 / 7v7 • Multi-sub rotation • 10 clean plays</div>
   <nav>
     <button class="tab active" data-tab="board">Board</button>
@@ -110,21 +110,22 @@
       <summary>Optional: map player # → initials</summary>
       <div id="initials" class="row" style="margin-top:6px"></div>
     </details>
-    <div class="kmeta" id="meta">Series 1 of N • Bench-group subs each series • Everyone gets QB over a cycle</div>
+    <div class="muted" id="meta">Series 1 of N • Bench-group subs each series • Everyone gets QB over a cycle</div>
   </div>
 
   <!-- BOARD -->
   <section id="board" class="panel">
     <div class="row">
-      <span class="pill">QB</span><span class="pill">C</span><span class="pill">X (WR-L)</span><span class="pill">Z (WR-R)</span><span class="pill">Y (Slot)</span><span class="pill">RB</span><span class="pill">Flex (7v7)</span>
+      <span class="pill">QB</span><span class="pill">C</span><span class="pill">X (left WR)</span>
+      <span class="pill">Z (right WR)</span><span class="pill">Y (slot)</span><span class="pill">RB</span><span class="pill">Flex (7v7)</span>
     </div>
     <div class="assign" id="assignGrid"></div>
-    <div class="muted" id="benchRow" style="margin-top:10px">Bench: -</div>
+    <div class="muted" id="benchRow" style="margin-top:10px">Bench: —</div>
   </section>
 
   <!-- PLAYS -->
   <section id="plays" class="panel" style="display:none">
-    <div class="row"><span class="pill">10 plays • built from Hitch/Slant/Out/Post/Corner/Fly + RB routes</span></div>
+    <div class="row"><span class="pill">10 plays • built from Hitch/Slant/Out/Post/Corner/Fly + RB Flat/Swing/Wheel/Check</span></div>
     <div class="grid" id="playGrid"></div>
   </section>
 
@@ -132,7 +133,7 @@
   <section id="rotations" class="panel" style="display:none">
     <h3>Equal-time Rotation (Bench-Group Subs)</h3>
     <div class="muted" style="margin-bottom:6px">
-      Bench count = roster − on-field. Those players sit <em>together</em> and groups cycle. Active positions also rotate so everyone gets QB.
+      Bench count = roster − on-field. Those players sit together and groups cycle. Active positions rotate so everyone gets QB.
     </div>
     <div id="rotationTable"></div>
   </section>
@@ -142,9 +143,9 @@
     <h3>Game Management</h3>
     <ul>
       <li><b>Series flow:</b> Same series plays both ways. On change of possession, tap <b>Next ▶</b> to sub the next bench group.</li>
-      <li><b>Landmarks:</b> cones at 5 & 10 = depth cues for kids.</li>
-      <li><b>Mirror:</b> switch “Mirror” to flip the play left/right for hash or strong-hand kids.</li>
-      <li><b>Simple cadence:</b> “Huddle — Play <i>Name</i> — On GO.”</li>
+      <li><b>Landmarks:</b> place cones at 5 & 10 “yards” for route depth.</li>
+      <li><b>Mirror:</b> use mirror for hash/handedness without relearning plays.</li>
+      <li><b>Cadence:</b> “Huddle — Play <i>Name</i> — On GO.”</li>
     </ul>
   </section>
 </main>
@@ -157,161 +158,165 @@
   const POS_BASE = [
     {key:"QB",   color:"var(--qb)",    x:300, y:360},
     {key:"C",    color:"var(--center)",x:300, y:330},
-    {key:"WR-L", color:"var(--wr)",    x:180, y:330}, // X
-    {key:"WR-R", color:"var(--wr)",    x:420, y:330}, // Z
-    {key:"Slot", color:"var(--slot)",  x:240, y:344}, // Y
+    {key:"X",    color:"var(--wr)",    x:180, y:330}, // left WR
+    {key:"Z",    color:"var(--wr)",    x:420, y:330}, // right WR
+    {key:"Y",    color:"var(--slot)",  x:240, y:344}, // slot
     {key:"RB",   color:"var(--rb)",    x:360, y:344},
     {key:"Flex", color:"var(--flex)",  x:300, y:304}  // 7v7 only
   ];
 
-  function positionsForFormat(fmt){
-    if(fmt==5) return ["QB","C","WR-L","WR-R","RB"];
-    if(fmt==6) return ["QB","C","WR-L","WR-R","Slot","RB"];
-    return ["QB","C","WR-L","WR-R","Slot","RB","Flex"];
+  function keysForFormat(fmt){
+    if(fmt==5) return ["QB","C","X","Z","RB"];
+    if(fmt==6) return ["QB","C","X","Z","Y","RB"];
+    return ["QB","C","X","Z","Y","RB","Flex"];
   }
 
-  /* ===== Route library (matches your route sheet + RB routes) ===== */
-  // scale: ~40px ≈ 5yd, 70px ≈ 8yd, 110px ≈ 12yd, 210px ≈ 20+yd
+  /* ===== Route library (NFL-style depths + offset from bubbles) =====
+     Rough scale: 5y≈45px, 10y≈90px, 15y≈135px, 20y+≈190px
+     We offset the start so lines never overlap the player bubble.
+  */
+  const OFF = { up:18, side:18 }; // start offsets
   const R = {
-    HITCH:(x,y)=>[`M${x} ${y} V${y-110} L${x-18} ${y-92}`],
-    SLANT:(x,y)=>[`M${x} ${y} L${x+90} ${y-35}`],
-    OUT5:(x,y)=>[`M${x} ${y} V${y-70} H${x+120}`],
-    POST:(x,y)=>[`M${x} ${y} V${y-110} L${x+95} ${y-170}`],
-    CORNER:(x,y)=>[`M${x} ${y} V${y-110} L${x+95} ${y-50}`],
-    FLY:(x,y)=>[`M${x} ${y} V${y-210}`],
+    // WR routes
+    HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-135} L${x-22} ${y-110}`],             // 15y then snap back
+    SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+110} ${y-45}`],                     // ~10y slant
+    OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-90} H${x+140}`],                      // 10 & out
+    POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-135} L${x+110} ${y-200}`],             // 15 then post
+    CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-135} L${x+110} ${y-70}`],            // 15 then corner
+    FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-210}`],                                 // go
     // RB + Center
-    FLAT:(x,y)=>[`M${x} ${y} H${x+120}`],
-    SWING:(x,y)=>[`M${x} ${y} C${x+20} ${y} ${x+70} ${y-10} ${x+140} ${y-30}`],
-    WHEEL:(x,y)=>[`M${x} ${y} H${x+80} C${x+110} ${y-10} ${x+110} ${y-60} ${x+110} ${y-110}`],
-    CHECK:(x,y)=>[`M${x} ${y} L${x-20} ${y-10} L${x} ${y-20}`],
-    C_SIT:(x,y)=>[`M${x} ${y} V${y-42}`],
-    C_SLANT:(x,y)=>[`M${x} ${y} L${x+60} ${y-30}`]
+    FLAT:(x,y)=>[`M${x+OFF.side} ${y} H${x+150}`],
+    SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+30} ${y} ${x+90} ${y-10} ${x+160} ${y-30}`],
+    WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+95} C${x+125} ${y-10} ${x+125} ${y-65} ${x+125} ${y-135}`],
+    CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-24} ${y-14} L${x} ${y-26}`],
+    C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-46}`],
+    C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+70} ${y-36}`]
   };
 
+  function mirroredX(x){ return ($("#mirror").value==="L") ? (600 - x) : x; }
+  function P(key){ const p=POS_BASE.find(pp=>pp.key===key); return {...p, x:mirroredX(p.x)}; }
+
   function drawPath(d, alt=false){
-    // crude end of path detection for arrow head
     const nums = d.match(/-?\d+(\.\d+)?/g).map(Number);
     const endX = nums[nums.length-2], endY = nums[nums.length-1];
     return `<path d="${d}" class="route${alt?' alt':''}"></path>
-            <polygon points="${endX-8},${endY} ${endX},${endY-8} ${endX},${endY+8}" class="arrow${alt?' alt':''}"></polygon>`;
+            <polygon points="${endX-9},${endY} ${endX},${endY-9} ${endX},${endY+9}" class="arrow${alt?' alt':''}"></polygon>`;
   }
+  function segs(routeFn, key){ const {x,y}=P(key); return routeFn(x,y); }
 
-  function P(key){ return POS_BASE.find(p=>p.key===key); }
-  function use(route, key){ const p=P(key); return route(p.x,p.y); }
-
-  /* ===== Play renderers (10 total) ===== */
+  /* ===== Plays (10) — constructed from the library ===== */
   function ply_SINGLE_SET_2(fmt){
-    const seg=[];
-    seg.push(...use(R.OUT5,"WR-L"));
-    seg.push(...use(R.C_SIT,"C"));
-    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
-    seg.push(...use(R.CORNER,"WR-R"));
-    seg.push(...use(R.FLAT,"RB"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.OUT10,"X"));
+    s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.CORNER,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_DOUBLE_BACK_1(fmt){
-    const seg=[];
-    seg.push(...use(R.OUT5,"WR-L"));
-    seg.push(...use(R.C_SIT,"C"));
-    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
-    seg.push(...use(R.CORNER,"WR-R"));
-    seg.push(...use(R.SWING,"RB"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.OUT10,"X"));
+    s.push(...segs(R.C_SIT,"C"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.CORNER,"Z"));
+    s.push(...segs(R.SWING,"RB"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_DOUBLE_BACK_3(fmt){
-    const seg=[];
-    seg.push(...use(R.FLY,"WR-L"));
-    seg.push(...use(R.C_SLANT,"C"));
-    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
-    seg.push(...use(R.OUT5,"WR-R"));
-    seg.push(...use(R.FLAT,"RB"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.FLY,"X"));
+    s.push(...segs(R.C_SLANT,"C"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.OUT10,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_SMASH(fmt){
-    const seg=[];
-    seg.push(...use(R.HITCH,"WR-L"));
-    if(fmt>=6) seg.push(...use(R.CORNER,"Slot"));
-    seg.push(...use(R.HITCH,"WR-R"));
-    seg.push(...use(R.FLAT,"RB"));
-    seg.push(...use(R.C_SIT,"C"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.HITCH,"X"));
+    if(fmt>=6) s.push(...segs(R.CORNER,"Y"));
+    s.push(...segs(R.HITCH,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_FLOOD(fmt){
-    const seg=[];
-    seg.push(...use(R.CORNER,"WR-R"));      // high
-    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // mid
-    seg.push(...use(R.FLAT,"RB"));          // low
-    seg.push(...use(R.SLANT,"WR-L"));       // backside
-    seg.push(...use(R.C_SIT,"C"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.CORNER,"Z"));        // high
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y")); // mid
+    s.push(...segs(R.FLAT,"RB"));         // low
+    s.push(...segs(R.SLANT,"X"));         // backside
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_QUICK_SLANTS(fmt){
-    const seg=[];
-    seg.push(...use(R.SLANT,"WR-L"));
-    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
-    seg.push(...use(R.SLANT,"WR-R"));
-    seg.push(...use(R.C_SIT,"C"));
-    seg.push(...use(R.CHECK,"RB"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.SLANT,"X"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.SLANT,"Z"));
+    s.push(...segs(R.C_SIT,"C"));
+    s.push(...segs(R.CHECK,"RB"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_LEVELS(fmt){
-    const seg=[];
-    seg.push(...use(R.POST,"WR-L"));     // deep in lane
-    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // shallow out
-    seg.push(...use(R.FLAT,"RB"));       // flat
-    seg.push(...use(R.FLY,"WR-R"));      // clear
-    seg.push(...use(R.C_SIT,"C"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.POST,"X"));      // deep middle
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y")); // shallow out
+    s.push(...segs(R.FLAT,"RB"));     // flat
+    s.push(...segs(R.FLY,"Z"));       // clear
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_DRIVE(fmt){
-    const seg=[];
-    seg.push(...use(R.SLANT,"WR-L"));     // shallow
-    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // dig/out
-    seg.push(...use(R.POST,"WR-R"));      // deep post
-    seg.push(...use(R.SWING,"RB"));       // swing
-    seg.push(...use(R.C_SIT,"C"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.SLANT,"X"));     // shallow
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y"));
+    s.push(...segs(R.POST,"Z"));      // deep post
+    s.push(...segs(R.SWING,"RB"));
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_WHEEL_SHOT(fmt){
-    const seg=[];
-    seg.push(...use(R.OUT5,"WR-L"));
-    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
-    seg.push(...use(R.FLY,"WR-R"));       // take the lid off
-    seg.push(...use(R.WHEEL,"RB"));       // wheel up the sideline
-    seg.push(...use(R.C_SIT,"C"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.OUT10,"X"));
+    if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
+    s.push(...segs(R.FLY,"Z"));
+    s.push(...segs(R.WHEEL,"RB"));    // wheel up sideline
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
   function ply_STICK(fmt){
-    const seg=[];
-    seg.push(...use(R.HITCH,"WR-L"));     // stick/hitch
-    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // out
-    seg.push(...use(R.CORNER,"WR-R"));    // corner
-    seg.push(...use(R.FLAT,"RB"));        // flat
-    seg.push(...use(R.C_SIT,"C"));
-    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+    const s=[];
+    s.push(...segs(R.HITCH,"X"));     // stick/hitch
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y")); // out
+    s.push(...segs(R.CORNER,"Z"));    // corner
+    s.push(...segs(R.FLAT,"RB"));     // flat
+    s.push(...segs(R.C_SIT,"C"));
+    return s.map((d,i)=>drawPath(d,i%2)).join('');
   }
 
   const PLAYS = [
-    {name:"Single Set 2", render:ply_SINGLE_SET_2},
+    {name:"Single Set 2",  render:ply_SINGLE_SET_2},
     {name:"Double Back 1", render:ply_DOUBLE_BACK_1},
     {name:"Double Back 3", render:ply_DOUBLE_BACK_3},
-    {name:"Smash", render:ply_SMASH},
-    {name:"Flood", render:ply_FLOOD},
-    {name:"Quick Slants", render:ply_QUICK_SLANTS},
-    {name:"Levels", render:ply_LEVELS},
-    {name:"Drive", render:ply_DRIVE},
-    {name:"Wheel Shot", render:ply_WHEEL_SHOT},
-    {name:"Stick", render:ply_STICK}
+    {name:"Smash",         render:ply_SMASH},
+    {name:"Flood",         render:ply_FLOOD},
+    {name:"Quick Slants",  render:ply_QUICK_SLANTS},
+    {name:"Levels",        render:ply_LEVELS},
+    {name:"Drive",         render:ply_DRIVE},
+    {name:"Wheel Shot",    render:ply_WHEEL_SHOT},
+    {name:"Stick",         render:ply_STICK}
   ];
 
   /* ===== Rotation: bench-group subs + position rotation ===== */
   function rotationRows(roster, fmt){
-    const keys = positionsForFormat(fmt);
-    const on = keys.length;                   // 5,6,7 on field
-    const benchCount = Math.max(0, roster - on);
+    const keys = keysForFormat(fmt);
+    const on = keys.length;                         // 5, 6, or 7 on field
+    const benchCount = Math.max(0, roster - on);    // # kids who sit each series
     const players = Array.from({length: roster}, (_,i)=> i+1);
 
-    // Build bench groups of size benchCount (if benchCount==0, one dummy group)
+    // Build bench groups of size benchCount; if no bench, single empty group
     const groups = [];
     if(benchCount===0){ groups.push([]); }
     else{
@@ -321,13 +326,13 @@
 
     const rows = [];
     for(let s=0; s<Math.max(roster, G); s++){
-      const benchGroup = groups[s % G];
-      const active = players.filter(p=> !benchGroup.includes(p));
-      // Rotate active order so positions change
+      const bench = groups[s % G];
+      const active = players.filter(p=> !bench.includes(p));
+      // rotate active order each series so positions change (ensures QB turns)
       const rotated = active.map((_,i)=> active[(i + s) % active.length]);
       const lineup = {};
       for(let i=0;i<keys.length;i++) lineup[keys[i]] = rotated[i];
-      rows.push({series:s+1, lineup, bench:[...benchGroup]});
+      rows.push({series:s+1, lineup, bench:[...bench]});
     }
     return rows;
   }
@@ -348,17 +353,12 @@
     return map;
   }
 
-  function mirrored(x){
-    // mirror around center (x=300). When "L", flip; when "R", keep.
-    return ($("#mirror").value==="L") ? (600 - x) : x;
-  }
-
-  function playerBubble(pos, label, showRole=true){
-    const x = mirrored(pos.x);
+  function playerBubble(posKey, label){
+    const p = P(posKey);
     return `
-      <circle cx="${x}" cy="${pos.y}" r="16" class="player" fill="${pos.color}"></circle>
-      <text x="${x}" y="${pos.y+4}" text-anchor="middle" class="bubble">${label}</text>
-      ${showRole?`<text x="${x}" y="${pos.y+18}" text-anchor="middle" class="role-lbl">${pos.key.replace('-L',' L').replace('-R',' R')}</text>`:''}
+      <circle cx="${p.x}" cy="${p.y}" r="16" class="player" fill="${p.color}"></circle>
+      <text x="${p.x}" y="${p.y+4}" text-anchor="middle" class="bubble">${label}</text>
+      <text x="${p.x}" y="${p.y+18}" text-anchor="middle" class="role-lbl">${posKey}</text>
     `;
   }
 
@@ -375,12 +375,11 @@
     $("#meta").textContent = `Series ${currentSeries} of ${rows.length} • Bench this series: ${row.bench.join(", ")||"—"}`;
 
     const grid=$("#assignGrid"); grid.innerHTML="";
-    positionsForFormat(fmt).forEach(pos=>{
+    keysForFormat(fmt).forEach(pos=>{
       const num=row.lineup[pos];
       const label=(idMode==="initials" && init[num])? init[num] : (idMode==="off"?"":num);
-      const roleClass="role-"+pos.replace("-","").replace("WRL","WR").replace("WRR","WR");
       const tile=document.createElement("div");
-      tile.className="tile "+roleClass;
+      tile.className="tile role-"+pos;
       tile.innerHTML=`<h4>${pos}</h4><div class="big">${label}</div>`;
       grid.appendChild(tile);
     });
@@ -399,36 +398,13 @@
     const grid=$("#playGrid"); grid.innerHTML="";
     PLAYS.forEach(p=>{
       // bubbles
-      const bubbles = positionsForFormat(fmt).map(k=>{
-        const pos = POS_BASE.find(pp=>pp.key===k);
-        const num = row.lineup[k];
-        let label = "";
-        if(idMode==="number") label = num;
-        else if(idMode==="initials") label = (init[num]||num);
-        // adjust mirrored x inline
-        const posM = {...pos, x:mirrored(pos.x)};
-        return playerBubble(posM, label);
+      const bubbles = keysForFormat(fmt).map(k=>{
+        if(k==="QB"||k==="C") return playerBubble(k, (idMode==="initials" && init[row.lineup[k]])? init[row.lineup[k]] : (idMode==="off"?"":row.lineup[k]));
+        const label=(idMode==="initials" && init[row.lineup[k]])? init[row.lineup[k]] : (idMode==="off"?"":row.lineup[k]);
+        return playerBubble(k,label);
       }).join("");
 
-      // routes: render with mirror by transforming path text (swap x -> mirrored)
-      // simpler: we generate from library at original positions, then replace the numbers for x with mirrored ones.
-      // To keep it fast, we rebuild the segments using mirrored POS directly:
-      function useM(route, key){ const p=POS_BASE.find(pp=>pp.key===key); return route(mirrored(p.x), p.y); }
-      // temporary dispatch: same as renderers but with mirroring
-      const renderMap = {
-        "Single Set 2": ply_SINGLE_SET_2,
-        "Double Back 1": ply_DOUBLE_BACK_1,
-        "Double Back 3": ply_DOUBLE_BACK_3,
-        "Smash": ply_SMASH,
-        "Flood": ply_FLOOD,
-        "Quick Slants": ply_QUICK_SLANTS,
-        "Levels": ply_LEVELS,
-        "Drive": ply_DRIVE,
-        "Wheel Shot": ply_WHEEL_SHOT,
-        "Stick": ply_STICK
-      };
-
-      const routes = renderMap[p.name](fmt).replaceAll("M", "M"); // already built
+      const routes = p.render(fmt);
 
       const card=document.createElement("div");
       card.className="panel";
@@ -449,7 +425,7 @@
     const fmt = parseInt($("#format").value,10);
     const roster = parseInt($("#roster").value,10);
     const rows = rotationRows(roster, fmt);
-    const pkeys = positionsForFormat(fmt);
+    const pkeys = keysForFormat(fmt);
     let html = `<table><thead><tr><th>Series</th>${pkeys.map(p=>`<th>${p}</th>`).join("")}<th>Bench</th></tr></thead><tbody>`;
     rows.forEach(r=>{
       html += `<tr><td>${r.series}</td>${pkeys.map(p=>`<td>${r.lineup[p]||""}</td>`).join("")}<td>${r.bench.join(", ")||"-"}</td></tr>`;
