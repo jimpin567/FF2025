@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flag Football — Hybrid (12 Plays, Solid & Longer)</title>
+<title>Flag Football — Plays + Fair Rotations (7–10 players)</title>
 <style>
   :root{
     --bg:#0b0f14; --card:#121820; --ink:#eaf2ff; --muted:#a9b8cc; --accent:#66b2ff;
@@ -26,6 +26,7 @@
   .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #3b4d66;color:#a9b8cc;font-size:12px}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .kmeta{font-size:12px;color:#a9b8cc}
+  .muted{color:#a9b8cc;font-size:12px}
 
   /* Board tiles */
   .assign{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
@@ -52,9 +53,9 @@
   .route.alt{stroke:#ffeb3b}
   .arrow{fill:#fff;stroke:#000;stroke-width:.8}
   .arrow.alt{fill:#ffeb3b}
+
   .grid{display:grid;grid-template-columns:1fr;gap:10px}
   @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
-  .muted{color:#a9b8cc;font-size:12px}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{border:1px solid #2a3a4f;padding:6px;text-align:center}
   th{background:#101522}
@@ -62,13 +63,12 @@
 </head>
 <body>
 <header>
-  <h1>Flag Football — Hybrid</h1>
-  <div class="sub">Board + 12 Plays with longer solid routes • Formats: 5v5 / 6v6 / 7v7</div>
+  <h1>Flag Football — Plays + Fair Rotations</h1>
+  <div class="sub">Rosters: 7–10 • Formats: 5v5 / 6v6 / 7v7 • Multi-sub rotation • 10 clean plays</div>
   <nav>
     <button class="tab active" data-tab="board">Board</button>
     <button class="tab" data-tab="plays">Plays</button>
     <button class="tab" data-tab="rotations">Rotations</button>
-    <button class="tab" data-tab="defense">Defense</button>
     <button class="tab" data-tab="tips">Tips</button>
   </nav>
 </header>
@@ -85,7 +85,7 @@
       </label>
       <label>Roster
         <select id="roster">
-          <option>7</option><option>8</option><option selected>9</option><option>10</option><option>12</option>
+          <option>7</option><option selected>8</option><option>9</option><option>10</option>
         </select>
       </label>
       <label>Identifiers
@@ -93,6 +93,12 @@
           <option value="number" selected>Player #</option>
           <option value="initials">Initials</option>
           <option value="off">Off</option>
+        </select>
+      </label>
+      <label>Mirror
+        <select id="mirror">
+          <option value="R" selected>Right</option>
+          <option value="L">Left</option>
         </select>
       </label>
       <div class="row">
@@ -104,13 +110,13 @@
       <summary>Optional: map player # → initials</summary>
       <div id="initials" class="row" style="margin-top:6px"></div>
     </details>
-    <div class="kmeta" id="meta">Series 1 of N • Everyone is QB once • Bench = N − format</div>
+    <div class="kmeta" id="meta">Series 1 of N • Bench-group subs each series • Everyone gets QB over a cycle</div>
   </div>
 
   <!-- BOARD -->
   <section id="board" class="panel">
     <div class="row">
-      <span class="pill">QB</span><span class="pill">C</span><span class="pill">WR-L</span><span class="pill">WR-R</span><span class="pill">Slot</span><span class="pill">RB</span><span class="pill">Flex</span>
+      <span class="pill">QB</span><span class="pill">C</span><span class="pill">X (WR-L)</span><span class="pill">Z (WR-R)</span><span class="pill">Y (Slot)</span><span class="pill">RB</span><span class="pill">Flex (7v7)</span>
     </div>
     <div class="assign" id="assignGrid"></div>
     <div class="muted" id="benchRow" style="margin-top:10px">Bench: -</div>
@@ -118,29 +124,27 @@
 
   <!-- PLAYS -->
   <section id="plays" class="panel" style="display:none">
-    <div class="row"><span class="pill">12-play list • Solid, longer routes • Overlays update with Prev/Next</span></div>
+    <div class="row"><span class="pill">10 plays • built from Hitch/Slant/Out/Post/Corner/Fly + RB routes</span></div>
     <div class="grid" id="playGrid"></div>
   </section>
 
   <!-- ROTATIONS -->
   <section id="rotations" class="panel" style="display:none">
-    <h3>Equal-time Rotation</h3>
+    <h3>Equal-time Rotation (Bench-Group Subs)</h3>
+    <div class="muted" style="margin-bottom:6px">
+      Bench count = roster − on-field. Those players sit <em>together</em> and groups cycle. Active positions also rotate so everyone gets QB.
+    </div>
     <div id="rotationTable"></div>
-  </section>
-
-  <!-- DEFENSE -->
-  <section id="defense" class="panel" style="display:none">
-    <h3>Simple Defenses</h3>
-    <div class="grid" id="defGrid"></div>
   </section>
 
   <!-- TIPS -->
   <section id="tips" class="panel" style="display:none">
     <h3>Game Management</h3>
     <ul>
-      <li><b>Series flow:</b> Same series plays both ways; on change of possession, tap <b>Next ▶</b>.</li>
-      <li><b>Landmarks:</b> cones at 5 & 10 yards = depth cues kids can see.</li>
-      <li><b>Fairness:</b> rotation is math; everyone plays QB once per full cycle.</li>
+      <li><b>Series flow:</b> Same series plays both ways. On change of possession, tap <b>Next ▶</b> to sub the next bench group.</li>
+      <li><b>Landmarks:</b> cones at 5 & 10 = depth cues for kids.</li>
+      <li><b>Mirror:</b> switch “Mirror” to flip the play left/right for hash or strong-hand kids.</li>
+      <li><b>Simple cadence:</b> “Huddle — Play <i>Name</i> — On GO.”</li>
     </ul>
   </section>
 </main>
@@ -149,15 +153,15 @@
   const $ = s=>document.querySelector(s);
   const $$ = s=>Array.from(document.querySelectorAll(s));
 
-  // Base spots for bubbles
+  /* ===== Base positions (centered) ===== */
   const POS_BASE = [
     {key:"QB",   color:"var(--qb)",    x:300, y:360},
     {key:"C",    color:"var(--center)",x:300, y:330},
-    {key:"WR-L", color:"var(--wr)",    x:180, y:330},
-    {key:"WR-R", color:"var(--wr)",    x:420, y:330},
-    {key:"Slot", color:"var(--slot)",  x:240, y:344},
+    {key:"WR-L", color:"var(--wr)",    x:180, y:330}, // X
+    {key:"WR-R", color:"var(--wr)",    x:420, y:330}, // Z
+    {key:"Slot", color:"var(--slot)",  x:240, y:344}, // Y
     {key:"RB",   color:"var(--rb)",    x:360, y:344},
-    {key:"Flex", color:"var(--flex)",  x:300, y:304} // 7v7 only
+    {key:"Flex", color:"var(--flex)",  x:300, y:304}  // 7v7 only
   ];
 
   function positionsForFormat(fmt){
@@ -166,19 +170,169 @@
     return ["QB","C","WR-L","WR-R","Slot","RB","Flex"];
   }
 
-  // Round-robin equal rotation: each series shifts order, ensures everyone plays QB once per full cycle
+  /* ===== Route library (matches your route sheet + RB routes) ===== */
+  // scale: ~40px ≈ 5yd, 70px ≈ 8yd, 110px ≈ 12yd, 210px ≈ 20+yd
+  const R = {
+    HITCH:(x,y)=>[`M${x} ${y} V${y-110} L${x-18} ${y-92}`],
+    SLANT:(x,y)=>[`M${x} ${y} L${x+90} ${y-35}`],
+    OUT5:(x,y)=>[`M${x} ${y} V${y-70} H${x+120}`],
+    POST:(x,y)=>[`M${x} ${y} V${y-110} L${x+95} ${y-170}`],
+    CORNER:(x,y)=>[`M${x} ${y} V${y-110} L${x+95} ${y-50}`],
+    FLY:(x,y)=>[`M${x} ${y} V${y-210}`],
+    // RB + Center
+    FLAT:(x,y)=>[`M${x} ${y} H${x+120}`],
+    SWING:(x,y)=>[`M${x} ${y} C${x+20} ${y} ${x+70} ${y-10} ${x+140} ${y-30}`],
+    WHEEL:(x,y)=>[`M${x} ${y} H${x+80} C${x+110} ${y-10} ${x+110} ${y-60} ${x+110} ${y-110}`],
+    CHECK:(x,y)=>[`M${x} ${y} L${x-20} ${y-10} L${x} ${y-20}`],
+    C_SIT:(x,y)=>[`M${x} ${y} V${y-42}`],
+    C_SLANT:(x,y)=>[`M${x} ${y} L${x+60} ${y-30}`]
+  };
+
+  function drawPath(d, alt=false){
+    // crude end of path detection for arrow head
+    const nums = d.match(/-?\d+(\.\d+)?/g).map(Number);
+    const endX = nums[nums.length-2], endY = nums[nums.length-1];
+    return `<path d="${d}" class="route${alt?' alt':''}"></path>
+            <polygon points="${endX-8},${endY} ${endX},${endY-8} ${endX},${endY+8}" class="arrow${alt?' alt':''}"></polygon>`;
+  }
+
+  function P(key){ return POS_BASE.find(p=>p.key===key); }
+  function use(route, key){ const p=P(key); return route(p.x,p.y); }
+
+  /* ===== Play renderers (10 total) ===== */
+  function ply_SINGLE_SET_2(fmt){
+    const seg=[];
+    seg.push(...use(R.OUT5,"WR-L"));
+    seg.push(...use(R.C_SIT,"C"));
+    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
+    seg.push(...use(R.CORNER,"WR-R"));
+    seg.push(...use(R.FLAT,"RB"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_DOUBLE_BACK_1(fmt){
+    const seg=[];
+    seg.push(...use(R.OUT5,"WR-L"));
+    seg.push(...use(R.C_SIT,"C"));
+    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
+    seg.push(...use(R.CORNER,"WR-R"));
+    seg.push(...use(R.SWING,"RB"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_DOUBLE_BACK_3(fmt){
+    const seg=[];
+    seg.push(...use(R.FLY,"WR-L"));
+    seg.push(...use(R.C_SLANT,"C"));
+    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
+    seg.push(...use(R.OUT5,"WR-R"));
+    seg.push(...use(R.FLAT,"RB"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_SMASH(fmt){
+    const seg=[];
+    seg.push(...use(R.HITCH,"WR-L"));
+    if(fmt>=6) seg.push(...use(R.CORNER,"Slot"));
+    seg.push(...use(R.HITCH,"WR-R"));
+    seg.push(...use(R.FLAT,"RB"));
+    seg.push(...use(R.C_SIT,"C"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_FLOOD(fmt){
+    const seg=[];
+    seg.push(...use(R.CORNER,"WR-R"));      // high
+    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // mid
+    seg.push(...use(R.FLAT,"RB"));          // low
+    seg.push(...use(R.SLANT,"WR-L"));       // backside
+    seg.push(...use(R.C_SIT,"C"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_QUICK_SLANTS(fmt){
+    const seg=[];
+    seg.push(...use(R.SLANT,"WR-L"));
+    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
+    seg.push(...use(R.SLANT,"WR-R"));
+    seg.push(...use(R.C_SIT,"C"));
+    seg.push(...use(R.CHECK,"RB"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_LEVELS(fmt){
+    const seg=[];
+    seg.push(...use(R.POST,"WR-L"));     // deep in lane
+    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // shallow out
+    seg.push(...use(R.FLAT,"RB"));       // flat
+    seg.push(...use(R.FLY,"WR-R"));      // clear
+    seg.push(...use(R.C_SIT,"C"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_DRIVE(fmt){
+    const seg=[];
+    seg.push(...use(R.SLANT,"WR-L"));     // shallow
+    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // dig/out
+    seg.push(...use(R.POST,"WR-R"));      // deep post
+    seg.push(...use(R.SWING,"RB"));       // swing
+    seg.push(...use(R.C_SIT,"C"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_WHEEL_SHOT(fmt){
+    const seg=[];
+    seg.push(...use(R.OUT5,"WR-L"));
+    if(fmt>=6) seg.push(...use(R.SLANT,"Slot"));
+    seg.push(...use(R.FLY,"WR-R"));       // take the lid off
+    seg.push(...use(R.WHEEL,"RB"));       // wheel up the sideline
+    seg.push(...use(R.C_SIT,"C"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+  function ply_STICK(fmt){
+    const seg=[];
+    seg.push(...use(R.HITCH,"WR-L"));     // stick/hitch
+    if(fmt>=6) seg.push(...use(R.OUT5,"Slot")); // out
+    seg.push(...use(R.CORNER,"WR-R"));    // corner
+    seg.push(...use(R.FLAT,"RB"));        // flat
+    seg.push(...use(R.C_SIT,"C"));
+    return seg.map((d,i)=>drawPath(d,i%2)).join('');
+  }
+
+  const PLAYS = [
+    {name:"Single Set 2", render:ply_SINGLE_SET_2},
+    {name:"Double Back 1", render:ply_DOUBLE_BACK_1},
+    {name:"Double Back 3", render:ply_DOUBLE_BACK_3},
+    {name:"Smash", render:ply_SMASH},
+    {name:"Flood", render:ply_FLOOD},
+    {name:"Quick Slants", render:ply_QUICK_SLANTS},
+    {name:"Levels", render:ply_LEVELS},
+    {name:"Drive", render:ply_DRIVE},
+    {name:"Wheel Shot", render:ply_WHEEL_SHOT},
+    {name:"Stick", render:ply_STICK}
+  ];
+
+  /* ===== Rotation: bench-group subs + position rotation ===== */
   function rotationRows(roster, fmt){
+    const keys = positionsForFormat(fmt);
+    const on = keys.length;                   // 5,6,7 on field
+    const benchCount = Math.max(0, roster - on);
     const players = Array.from({length: roster}, (_,i)=> i+1);
+
+    // Build bench groups of size benchCount (if benchCount==0, one dummy group)
+    const groups = [];
+    if(benchCount===0){ groups.push([]); }
+    else{
+      for(let i=0;i<roster;i+=benchCount) groups.push(players.slice(i, i+benchCount));
+    }
+    const G = groups.length;
+
     const rows = [];
-    for(let s=0;s<roster;s++){
-      const order = players.map((_,i)=> players[(i+s)%roster]);
-      const lineup = {}; const keys=positionsForFormat(fmt);
-      for(let i=0;i<keys.length;i++) lineup[keys[i]] = order[i];
-      rows.push({series:s+1, lineup, bench: order.slice(keys.length)});
+    for(let s=0; s<Math.max(roster, G); s++){
+      const benchGroup = groups[s % G];
+      const active = players.filter(p=> !benchGroup.includes(p));
+      // Rotate active order so positions change
+      const rotated = active.map((_,i)=> active[(i + s) % active.length]);
+      const lineup = {};
+      for(let i=0;i<keys.length;i++) lineup[keys[i]] = rotated[i];
+      rows.push({series:s+1, lineup, bench:[...benchGroup]});
     }
     return rows;
   }
 
+  /* ===== UI helpers ===== */
   function buildInitials(){
     const n = parseInt($("#roster").value,10);
     const box = $("#initials"); box.innerHTML="";
@@ -188,133 +342,25 @@
       box.appendChild(inp);
     }
   }
-
   function initialsMap(){
     const n = parseInt($("#roster").value,10), map={};
     for(let i=1;i<=n;i++){ map[i]=($("#init-"+i)?.value||"").toUpperCase().slice(0,3); }
     return map;
   }
 
-  // ---- Route builders (solid, visually longer by ~5–10 yards) ----
-  const ROUTES = {
-    // Core 6
-    go: fmt => `
-      <path d="M180 330 V165" class="route"></path><polygon points="180,153 170,165 190,165" class="arrow"></polygon>
-      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
-      <path d="M300 330 V288" class="route"></path><polygon points="300,278 290,288 310,288" class="arrow"></polygon>
-      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 H318" class="route alt"></path><polygon points="328,344 318,336 318,352" class="arrow alt"></polygon>`:""}
-      ${fmt>=7?`<path d="M300 304 C300 270 325 240 362 212" class="route"></path><polygon points="370,206 358,210 364,218" class="arrow"></polygon>`:""}
-    `,
-    slants: fmt => `
-      <path d="M180 330 C205 300 235 278 270 260" class="route"></path><polygon points="278,256 266,260 272,268" class="arrow"></polygon>
-      <path d="M420 330 C395 300 365 278 330 260" class="route"></path><polygon points="322,256 328,268 334,260" class="arrow"></polygon>
-      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
-      <path d="M360 344 C340 344 320 346 300 350" class="route"></path><polygon points="292,352 302,344 302,356" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 C258 324 286 306 312 292" class="route alt"></path><polygon points="321,288 309,292 317,298" class="arrow alt"></polygon>`:""}
-      ${fmt>=7?`<path d="M300 304 V188" class="route"></path><polygon points="300,178 290,188 310,188" class="arrow"></polygon>`:""}
-    `,
-    smash: fmt => `
-      <path d="M420 330 V292" class="route"></path><polygon points="420,282 410,292 430,292" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 C274 324 320 306 366 294 C398 280 424 262 446 244" class="route alt"></path><polygon points="454,238 442,240 448,248" class="arrow alt"></polygon>`:""}
-      <path d="M180 330 V198" class="route"></path><polygon points="180,188 170,198 190,198" class="arrow"></polygon>
-      <path d="M300 330 H364" class="route"></path><polygon points="374,330 364,322 364,338" class="arrow"></polygon>
-      <path d="M360 344 C352 340 344 336 336 334" class="route"></path>
-      ${fmt>=7?`<path d="M300 304 C300 284 280 270 252 258" class="route"></path><polygon points="244,254 255,257 249,265" class="arrow"></polygon>`:""}
-    `,
-    flood: fmt => `
-      <path d="M420 330 V190" class="route"></path><polygon points="420,180 410,190 430,190" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 H370" class="route alt"></path><polygon points="380,344 370,336 370,352" class="arrow alt"></polygon>`:""}
-      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
-      <path d="M180 330 C220 330 270 338 320 352" class="route"></path><polygon points="330,354 320,346 320,360" class="arrow"></polygon>
-      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
-      ${fmt>=7?`<path d="M300 304 C322 286 358 270 400 252" class="route"></path><polygon points="408,248 396,250 402,258" class="arrow"></polygon>`:""}
-    `,
-    cross: fmt => `
-      <path d="M180 330 C224 330 276 340 328 356" class="route"></path><polygon points="338,358 328,350 328,364" class="arrow"></polygon>
-      <path d="M420 330 C376 330 324 340 272 356" class="route"></path><polygon points="262,358 272,350 272,364" class="arrow"></polygon>
-      <path d="M300 330 V278" class="route"></path><polygon points="300,268 290,278 310,278" class="arrow"></polygon>
-      <path d="M360 344 C360 326 344 314 322 310" class="route"></path><polygon points="314,308 324,310 320,318" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 C268 344 296 350 324 358" class="route alt"></path><polygon points="334,360 324,352 324,366" class="arrow alt"></polygon>`:""}
-      ${fmt>=7?`<path d="M300 304 C300 286 316 274 340 266" class="route"></path><polygon points="348,264 338,266 343,274" class="arrow"></polygon>`:""}
-    `,
-    jet: fmt => `
-      ${fmt>=6
-        ?`<path d="M240 344 H130" class="route alt"></path><polygon points="120,344 130,336 130,352" class="arrow alt"></polygon>`
-        :`<path d="M360 344 H190" class="route alt"></path><polygon points="180,344 190,336 190,352" class="arrow alt"></polygon>`
-      }
-      <path d="M180 330 V185" class="route"></path><polygon points="180,175 170,185 190,185" class="arrow"></polygon>
-      <path d="M420 330 V185" class="route"></path><polygon points="420,175 410,185 430,185" class="arrow"></polygon>
-      <path d="M300 330 H365" class="route"></path><polygon points="375,330 365,322 365,338" class="arrow"></polygon>
-      <path d="M360 344 C355 340 350 338 344 336" class="route"></path>
-      ${fmt>=7?`<path d="M300 304 C288 296 270 288 252 282" class="route"></path><polygon points="244,280 254,282 250,290" class="arrow"></polygon>`:""}
-    `,
+  function mirrored(x){
+    // mirror around center (x=300). When "L", flip; when "R", keep.
+    return ($("#mirror").value==="L") ? (600 - x) : x;
+  }
 
-    // Plus 6 more
-    levels: fmt => `
-      <path d="M180 330 C180 280 210 250 260 235" class="route"></path><polygon points="268,233 258,235 263,243" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 C260 344 290 350 320 358" class="route alt"></path><polygon points="330,360 320,352 320,366" class="arrow alt"></polygon>`:""}
-      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
-      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
-      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
-      ${fmt>=7?`<path d="M300 304 V188" class="route"></path><polygon points="300,178 290,188 310,188" class="arrow"></polygon>`:""}
-    `,
-    tripsflood: fmt => `
-      <path d="M180 330 V185" class="route"></path><polygon points="180,175 170,185 190,185" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 H170" class="route alt"></path><polygon points="160,344 170,336 170,352" class="arrow alt"></polygon>`:""}
-      <path d="M360 344 H280" class="route"></path><polygon points="270,344 280,336 280,352" class="arrow"></polygon>
-      <path d="M420 330 C395 300 365 278 330 260" class="route"></path><polygon points="322,256 328,268 334,260" class="arrow"></polygon>
-      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
-      ${fmt>=7?`<path d="M300 304 C316 288 346 274 382 260" class="route"></path><polygon points="390,256 378,258 384,266" class="arrow"></polygon>`:""}
-    `,
-    centerrelease: fmt => `
-      <path d="M300 330 V210" class="route"></path><polygon points="300,200 290,210 310,210" class="arrow"></polygon>
-      <path d="M180 330 V165" class="route"></path><polygon points="180,153 170,165 190,165" class="arrow"></polygon>
-      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 H318" class="route alt"></path><polygon points="328,344 318,336 318,352" class="arrow alt"></polygon>`:""}
-      <path d="M360 344 C348 340 340 334 334 326" class="route"></path>
-      ${fmt>=7?`<path d="M300 304 C300 286 286 274 266 266" class="route"></path><polygon points="258,264 268,266 264,274" class="arrow"></polygon>`:""}
-    `,
-    fourverts: fmt => `
-      <path d="M180 330 V165" class="route"></path><polygon points="180,153 170,165 190,165" class="arrow"></polygon>
-      <path d="M420 330 V165" class="route"></path><polygon points="420,153 410,165 430,165" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 V185" class="route alt"></path><polygon points="240,175 230,185 250,185" class="arrow alt"></polygon>`:""}
-      ${fmt>=7?`<path d="M300 304 V175" class="route"></path><polygon points="300,165 290,175 310,175" class="arrow"></polygon>`:""}
-      <path d="M300 330 V210" class="route"></path><polygon points="300,200 290,210 310,210" class="arrow"></polygon>
-      <path d="M360 344 H430" class="route"></path><polygon points="440,344 430,336 430,352" class="arrow"></polygon>
-    `,
-    scissors: fmt => `
-      <path d="M180 330 C200 300 240 270 300 250" class="route"></path><polygon points="308,248 298,250 303,258" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 C270 330 320 314 380 300" class="route alt"></path><polygon points="390,298 380,290 380,304" class="arrow alt"></polygon>`:""}
-      ${fmt>=7?`<path d="M300 304 V175" class="route"></path><polygon points="300,165 290,175 310,175" class="arrow"></polygon>`:""}
-      <path d="M420 330 V292" class="route"></path><polygon points="420,282 410,292 430,292" class="arrow"></polygon>
-      <path d="M360 344 H320" class="route"></path><polygon points="310,344 320,336 320,352" class="arrow"></polygon>
-      <path d="M300 330 V286" class="route"></path><polygon points="300,276 290,286 310,286" class="arrow"></polygon>
-    `,
-    mesh: fmt => `
-      <path d="M180 330 C220 330 268 340 316 356" class="route"></path><polygon points="326,358 316,350 316,364" class="arrow"></polygon>
-      ${fmt>=6?`<path d="M240 344 C280 344 328 352 376 366" class="route alt"></path><polygon points="386,368 376,360 376,374" class="arrow alt"></polygon>`:""}
-      <path d="M420 330 C382 330 334 340 286 356" class="route"></path><polygon points="276,358 286,350 286,364" class="arrow"></polygon>
-      ${fmt>=7?`<path d="M300 304 C320 296 344 288 368 282" class="route"></path><polygon points="376,280 366,282 371,290" class="arrow"></polygon>`:""}
-      <path d="M300 330 V278" class="route"></path><polygon points="300,268 290,278 310,278" class="arrow"></polygon>
-      <path d="M360 344 H420" class="route"></path><polygon points="430,344 420,336 420,352" class="arrow"></polygon>
-    `
-  };
-
-  const PLAY_LIST = [
-    {name:"Double Go", key:"go"},
-    {name:"Quick Slants", key:"slants"},
-    {name:"Smash", key:"smash"},
-    {name:"Flood", key:"flood"},
-    {name:"Crossers", key:"cross"},
-    {name:"Jet Sweep", key:"jet"},
-    {name:"Levels", key:"levels"},
-    {name:"Trips Flood", key:"tripsflood"},
-    {name:"Center Release", key:"centerrelease"},
-    {name:"Four Verticals", key:"fourverts"},
-    {name:"Scissors", key:"scissors"},
-    {name:"Mesh", key:"mesh"}
-  ];
+  function playerBubble(pos, label, showRole=true){
+    const x = mirrored(pos.x);
+    return `
+      <circle cx="${x}" cy="${pos.y}" r="16" class="player" fill="${pos.color}"></circle>
+      <text x="${x}" y="${pos.y+4}" text-anchor="middle" class="bubble">${label}</text>
+      ${showRole?`<text x="${x}" y="${pos.y+18}" text-anchor="middle" class="role-lbl">${pos.key.replace('-L',' L').replace('-R',' R')}</text>`:''}
+    `;
+  }
 
   let currentSeries = 1;
 
@@ -326,7 +372,7 @@
     const rows = rotationRows(roster, fmt);
     if(currentSeries>rows.length) currentSeries=1;
     const row = rows[currentSeries-1];
-    $("#meta").textContent = `Series ${currentSeries} of ${rows.length} • Everyone at QB once • Bench per series: ${roster - fmt}`;
+    $("#meta").textContent = `Series ${currentSeries} of ${rows.length} • Bench this series: ${row.bench.join(", ")||"—"}`;
 
     const grid=$("#assignGrid"); grid.innerHTML="";
     positionsForFormat(fmt).forEach(pos=>{
@@ -351,20 +397,38 @@
     const row = rows[currentSeries-1];
 
     const grid=$("#playGrid"); grid.innerHTML="";
-    PLAY_LIST.forEach(p=>{
-      // Player bubbles (with optional numbers/initials)
+    PLAYS.forEach(p=>{
+      // bubbles
       const bubbles = positionsForFormat(fmt).map(k=>{
         const pos = POS_BASE.find(pp=>pp.key===k);
         const num = row.lineup[k];
         let label = "";
         if(idMode==="number") label = num;
         else if(idMode==="initials") label = (init[num]||num);
-        return `
-          <circle cx="${pos.x}" cy="${pos.y}" r="16" class="player" fill="${pos.color}"></circle>
-          <text x="${pos.x}" y="${pos.y+4}" text-anchor="middle" class="bubble">${label}</text>
-          <text x="${pos.x}" y="${pos.y+18}" text-anchor="middle" class="role-lbl">${pos.key.replace('-L',' L').replace('-R',' R')}</text>
-        `;
+        // adjust mirrored x inline
+        const posM = {...pos, x:mirrored(pos.x)};
+        return playerBubble(posM, label);
       }).join("");
+
+      // routes: render with mirror by transforming path text (swap x -> mirrored)
+      // simpler: we generate from library at original positions, then replace the numbers for x with mirrored ones.
+      // To keep it fast, we rebuild the segments using mirrored POS directly:
+      function useM(route, key){ const p=POS_BASE.find(pp=>pp.key===key); return route(mirrored(p.x), p.y); }
+      // temporary dispatch: same as renderers but with mirroring
+      const renderMap = {
+        "Single Set 2": ply_SINGLE_SET_2,
+        "Double Back 1": ply_DOUBLE_BACK_1,
+        "Double Back 3": ply_DOUBLE_BACK_3,
+        "Smash": ply_SMASH,
+        "Flood": ply_FLOOD,
+        "Quick Slants": ply_QUICK_SLANTS,
+        "Levels": ply_LEVELS,
+        "Drive": ply_DRIVE,
+        "Wheel Shot": ply_WHEEL_SHOT,
+        "Stick": ply_STICK
+      };
+
+      const routes = renderMap[p.name](fmt).replaceAll("M", "M"); // already built
 
       const card=document.createElement("div");
       card.className="panel";
@@ -373,7 +437,7 @@
         <div class="field-wrap"><div class="field"><div class="sideline"></div>
           <svg viewBox="0 0 600 420">
             ${bubbles}
-            ${ROUTES[p.key](fmt)}
+            ${routes}
           </svg>
         </div></div>
       `;
@@ -394,99 +458,14 @@
     $("#rotationTable").innerHTML=html;
   }
 
-  // Simple defense cards
-  const DEF = {
-    "5":[
-      {name:"5v5 Base Zone (2 Rush, 3 Across)", svg:`
-        <rect x="60" y="210" width="480" height="50" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <rect x="60" y="150" width="480" height="50" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <circle cx="240" cy="300" r="16" class="player" fill="var(--def)"></circle><text x="240" y="304" class="bubble" text-anchor="middle">R</text>
-        <circle cx="360" cy="300" r="16" class="player" fill="var(--def)"></circle><text x="360" y="304" class="bubble" text-anchor="middle">R</text>
-        <circle cx="180" cy="235" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="300" cy="205" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="420" cy="235" r="16" class="player" fill="var(--def)"></circle>
-      `,note:"Rush two; three across. Don't get beat deep."},
-      {name:"5v5 Man + Safety", svg:`
-        <rect x="60" y="120" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <circle cx="140" cy="260" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="220" cy="260" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="380" cy="260" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="460" cy="260" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="300" cy="140" r="16" class="player" fill="var(--def)"></circle><text x="300" y="144" class="bubble" text-anchor="middle">S</text>
-      `,note:"Four in man; one deep safety keeps the lid on."}
-    ],
-    "6":[
-      {name:"6v6 1 Rush, 2 Flats, 2 Deep", svg:`
-        <rect x="60" y="220" width="480" height="45" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <rect x="60" y="165" width="480" height="45" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <circle cx="300" cy="305" r="16" class="player" fill="var(--def)"></circle><text x="300" y="309" class="bubble" text-anchor="middle">R</text>
-        <circle cx="180" cy="240" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="420" cy="240" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="240" cy="185" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="360" cy="185" r="16" class="player" fill="var(--def)"></circle>
-      `,note:"Flats & deeps; force throws underneath."},
-      {name:"6v6 Man + Safety", svg:`
-        <rect x="60" y="130" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <circle cx="120" cy="265" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="210" cy="265" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="300" cy="265" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="390" cy="265" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="480" cy="265" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="300" cy="150" r="16" class="player" fill="var(--def)"></circle><text x="300" y="154" class="bubble" text-anchor="middle">S</text>
-      `,note:"Five in man; single-high safety."}
-    ],
-    "7":[
-      {name:"7v7 2-2-1 Zone (2 Rush)", svg:`
-        <rect x="60" y="235" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <rect x="60" y="185" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <rect x="60" y="135" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <circle cx="260" cy="310" r="16" class="player" fill="var(--def)"></circle><text x="260" y="314" class="bubble" text-anchor="middle">R</text>
-        <circle cx="340" cy="310" r="16" class="player" fill="var(--def)"></circle><text x="340" y="314" class="bubble" text-anchor="middle">R</text>
-        <circle cx="180" cy="255" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="420" cy="255" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="220" cy="205" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="380" cy="205" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="300" cy="155" r="16" class="player" fill="var(--def)"></circle>
-      `,note:"Keep the lid on; rally and pull flags."},
-      {name:"7v7 Match Zone", svg:`
-        <rect x="60" y="210" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <rect x="60" y="160" width="480" height="40" fill="var(--zone)" stroke="#fff" stroke-width="1"></rect>
-        <circle cx="300" cy="310" r="16" class="player" fill="var(--def)"></circle><text x="300" y="314" class="bubble" text-anchor="middle">R</text>
-        <circle cx="140" cy="230" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="260" cy="230" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="340" cy="230" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="460" cy="230" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="220" cy="180" r="16" class="player" fill="var(--def)"></circle>
-        <circle cx="380" cy="180" r="16" class="player" fill="var(--def)"></circle>
-      `,note:"Pass off crossers; rusher speeds the clock."}
-    ]
-  };
-
-  function renderDefense(){
-    const fmt = $("#format").value;
-    const grid=$("#defGrid"); grid.innerHTML="";
-    DEF[fmt].forEach(d=>{
-      const card=document.createElement("div"); card.className="panel";
-      card.innerHTML=`
-        <h3 style="margin:4px 0">${d.name}</h3>
-        <div class="field-wrap"><div class="field"><div class="sideline"></div>
-          <svg viewBox="0 0 600 420">${d.svg}</svg>
-        </div></div>
-        <p class="muted" style="margin-top:6px">${d.note}</p>
-      `;
-      grid.appendChild(card);
-    });
-  }
-
-  function renderAll(){ renderBoard(); renderPlays(); renderRotation(); if($("#defense").style.display!=="none") renderDefense(); }
+  function renderAll(){ renderBoard(); renderPlays(); renderRotation(); }
 
   // Tabs
   $$(".tab").forEach(btn=>btn.addEventListener("click", ()=>{
     $$(".tab").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    ["board","plays","rotations","defense","tips"].forEach(id=>$("#"+id).style.display="none");
+    ["board","plays","rotations","tips"].forEach(id=>$("#"+id).style.display="none");
     $("#"+btn.dataset.tab).style.display="block";
-    if(btn.dataset.tab==="defense") renderDefense();
     if(btn.dataset.tab==="rotations") renderRotation();
     if(btn.dataset.tab==="plays") renderPlays();
     if(btn.dataset.tab==="board") renderBoard();
@@ -496,6 +475,7 @@
   $("#format").addEventListener("change", ()=>{ currentSeries=1; renderAll(); });
   $("#roster").addEventListener("change", ()=>{ buildInitials(); currentSeries=1; renderAll(); });
   $("#idMode").addEventListener("change", renderAll);
+  $("#mirror").addEventListener("change", renderAll);
   $("#nextBtn").addEventListener("click", ()=>{ currentSeries++; const r=parseInt($("#roster").value,10); if(currentSeries>r) currentSeries=1; renderAll(); });
   $("#prevBtn").addEventListener("click", ()=>{ currentSeries--; const r=parseInt($("#roster").value,10); if(currentSeries<1) currentSeries=r; renderAll(); });
 
