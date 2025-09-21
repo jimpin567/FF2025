@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flag Football — NFL-style Plays + Fair Rotations (7–10 players)</title>
+<title>Flag Football — Clean Plays + Rotations (fixed arrows & depth)</title>
 <style>
   :root{
     --bg:#0b0f14; --card:#121820; --ink:#eaf2ff; --muted:#a9b8cc; --accent:#66b2ff;
@@ -39,20 +39,18 @@
   .role-RB{background:#8e24aa20;border-color:#6a1b9a}
   .role-Flex{background:#26a69a20;border-color:#0d6b62}
 
-  /* Field + routes */
+  /* Field + routes (shorter field for better depth perception) */
   .field-wrap{background:linear-gradient(180deg,var(--field-green),var(--field-green-dark));border-radius:12px;padding:8px;border:2px solid #123814}
-  .field{height:420px;position:relative;background:
-    repeating-linear-gradient(to bottom, transparent 0, transparent 36px, rgba(255,255,255,.12) 36px, rgba(255,255,255,.12) 38px);
+  .field{height:320px;position:relative;background:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 28px, rgba(255,255,255,.12) 28px, rgba(255,255,255,.12) 30px);
     border-radius:10px}
   .sideline{position:absolute;inset:0;box-shadow:inset 0 0 0 3px var(--field-line);border-radius:10px}
   svg{width:100%;height:100%;display:block}
   .player{stroke:#0008;stroke-width:1.2px}
   .bubble{font-size:14px;font-weight:800;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:1.5px}
   .role-lbl{font-size:11px;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.8px}
-  .route{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
-  .route.alt{stroke:#ffeb3b}
-  .arrow{fill:#fff;stroke:#000;stroke-width:.9}
-  .arrow.alt{fill:#ffeb3b}
+  .route{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+  .route.alt{stroke:#ffeb3b;marker-end:url(#arrowAlt)}
 
   .grid{display:grid;grid-template-columns:1fr;gap:10px}
   @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
@@ -63,8 +61,8 @@
 </head>
 <body>
 <header>
-  <h1>Flag Football — NFL-style Plays + Fair Rotations</h1>
-  <div class="sub">Rosters: 7–10 • Formats: 5v5 / 6v6 / 7v7 • Multi-sub rotation • 10 clean plays</div>
+  <h1>Flag Football — Clean Plays + Rotations</h1>
+  <div class="sub">Rosters: 7–10 • Formats: 5v5 / 6v6 / 7v7 • Bench-group subs • 10 plays (fixed arrows & depth)</div>
   <nav>
     <button class="tab active" data-tab="board">Board</button>
     <button class="tab" data-tab="plays">Plays</button>
@@ -110,7 +108,7 @@
       <summary>Optional: map player # → initials</summary>
       <div id="initials" class="row" style="margin-top:6px"></div>
     </details>
-    <div class="muted" id="meta">Series 1 of N • Bench-group subs each series • Everyone gets QB over a cycle</div>
+    <div class="muted" id="meta">Series 1 of N • Bench this series: —</div>
   </div>
 
   <!-- BOARD -->
@@ -125,7 +123,7 @@
 
   <!-- PLAYS -->
   <section id="plays" class="panel" style="display:none">
-    <div class="row"><span class="pill">10 plays • built from Hitch/Slant/Out/Post/Corner/Fly + RB Flat/Swing/Wheel/Check</span></div>
+    <div class="row"><span class="pill">10 plays • Hitch/Slant/Out/Post/Corner/Fly + RB Flat/Swing/Wheel/Check</span></div>
     <div class="grid" id="playGrid"></div>
   </section>
 
@@ -143,9 +141,8 @@
     <h3>Game Management</h3>
     <ul>
       <li><b>Series flow:</b> Same series plays both ways. On change of possession, tap <b>Next ▶</b> to sub the next bench group.</li>
-      <li><b>Landmarks:</b> place cones at 5 & 10 “yards” for route depth.</li>
-      <li><b>Mirror:</b> use mirror for hash/handedness without relearning plays.</li>
-      <li><b>Cadence:</b> “Huddle — Play <i>Name</i> — On GO.”</li>
+      <li><b>Depth cues:</b> Field scaled for 5/10/15/20yd depths; cones at 5 & 10 help kids.</li>
+      <li><b>Mirror:</b> flip left/right without changing assignments.</li>
     </ul>
   </section>
 </main>
@@ -154,15 +151,16 @@
   const $ = s=>document.querySelector(s);
   const $$ = s=>Array.from(document.querySelectorAll(s));
 
-  /* ===== Base positions (centered) ===== */
+  /* ===== Base positions (shorter field coordinates) ===== */
+  // viewBox still 600x320; bubbles sit a bit closer to bottom because field is shorter
   const POS_BASE = [
-    {key:"QB",   color:"var(--qb)",    x:300, y:360},
-    {key:"C",    color:"var(--center)",x:300, y:330},
-    {key:"X",    color:"var(--wr)",    x:180, y:330}, // left WR
-    {key:"Z",    color:"var(--wr)",    x:420, y:330}, // right WR
-    {key:"Y",    color:"var(--slot)",  x:240, y:344}, // slot
-    {key:"RB",   color:"var(--rb)",    x:360, y:344},
-    {key:"Flex", color:"var(--flex)",  x:300, y:304}  // 7v7 only
+    {key:"QB",   color:"var(--qb)",    x:300, y:275},
+    {key:"C",    color:"var(--center)",x:300, y:245},
+    {key:"X",    color:"var(--wr)",    x:180, y:245}, // left WR
+    {key:"Z",    color:"var(--wr)",    x:420, y:245}, // right WR
+    {key:"Y",    color:"var(--slot)",  x:240, y:260}, // slot
+    {key:"RB",   color:"var(--rb)",    x:360, y:260},
+    {key:"Flex", color:"var(--flex)",  x:300, y:220}  // 7v7 only
   ];
 
   function keysForFormat(fmt){
@@ -171,40 +169,49 @@
     return ["QB","C","X","Z","Y","RB","Flex"];
   }
 
-  /* ===== Route library (NFL-style depths + offset from bubbles) =====
-     Rough scale: 5y≈45px, 10y≈90px, 15y≈135px, 20y+≈190px
-     We offset the start so lines never overlap the player bubble.
+  /* ===== Route library with better depth scale & offset =====
+     Scale for the shorter field:
+     5y ≈ 36px, 10y ≈ 72px, 15y ≈ 108px, 20y ≈ 144px
   */
-  const OFF = { up:18, side:18 }; // start offsets
+  const OFF = { up:16, side:16 };
+  const YD = { y5:36, y10:72, y15:108, y20:144 };
+
   const R = {
     // WR routes
-    HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-135} L${x-22} ${y-110}`],             // 15y then snap back
-    SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+110} ${y-45}`],                     // ~10y slant
-    OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-90} H${x+140}`],                      // 10 & out
-    POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-135} L${x+110} ${y-200}`],             // 15 then post
-    CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-135} L${x+110} ${y-70}`],            // 15 then corner
-    FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-210}`],                                 // go
+    HITCH:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x-20} ${y-YD.y10}`],
+    SLANT:(x,y)=>[`M${x+OFF.side} ${y} L${x+100} ${y-40}`],              // ~10y slant
+    OUT10:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y10} H${x+130}`],
+    POST:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+105} ${y-YD.y20-15}`],
+    CORNER:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y15} L${x+105} ${y-YD.y10}`],
+    FLY:(x,y)=>[`M${x} ${y-OFF.up} V${y-YD.y20-5}`],
     // RB + Center
     FLAT:(x,y)=>[`M${x+OFF.side} ${y} H${x+150}`],
-    SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+30} ${y} ${x+90} ${y-10} ${x+160} ${y-30}`],
-    WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+95} C${x+125} ${y-10} ${x+125} ${y-65} ${x+125} ${y-135}`],
-    CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-24} ${y-14} L${x} ${y-26}`],
-    C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-46}`],
-    C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+70} ${y-36}`]
+    SWING:(x,y)=>[`M${x+OFF.side} ${y} C${x+30} ${y} ${x+85} ${y-10} ${x+150} ${y-28}`],
+    WHEEL:(x,y)=>[`M${x+OFF.side} ${y} H${x+95} C${x+125} ${y-10} ${x+125} ${y-60} ${x+125} ${y-YD.y15}`],
+    CHECK:(x,y)=>[`M${x} ${y-OFF.up} L${x-22} ${y-12} L${x} ${y-24}`],
+    C_SIT:(x,y)=>[`M${x} ${y-OFF.up} V${y-40}`],
+    C_SLANT:(x,y)=>[`M${x} ${y-OFF.up} L${x+68} ${y-34}`]
   };
 
   function mirroredX(x){ return ($("#mirror").value==="L") ? (600 - x) : x; }
   function P(key){ const p=POS_BASE.find(pp=>pp.key===key); return {...p, x:mirroredX(p.x)}; }
-
-  function drawPath(d, alt=false){
-    const nums = d.match(/-?\d+(\.\d+)?/g).map(Number);
-    const endX = nums[nums.length-2], endY = nums[nums.length-1];
-    return `<path d="${d}" class="route${alt?' alt':''}"></path>
-            <polygon points="${endX-9},${endY} ${endX},${endY-9} ${endX},${endY+9}" class="arrow${alt?' alt':''}"></polygon>`;
-  }
   function segs(routeFn, key){ const {x,y}=P(key); return routeFn(x,y); }
 
-  /* ===== Plays (10) — constructed from the library ===== */
+  /* ===== SVG defs: auto-oriented arrowheads ===== */
+  function svgDefs(){
+    return `
+      <defs>
+        <marker id="arrow" markerWidth="12" markerHeight="12" refX="8" refY="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,12 L12,6 z" fill="#ffffff" stroke="#000" stroke-width="0.8"></path>
+        </marker>
+        <marker id="arrowAlt" markerWidth="12" markerHeight="12" refX="8" refY="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,12 L12,6 z" fill="#ffeb3b" stroke="#000" stroke-width="0.8"></path>
+        </marker>
+      </defs>
+    `;
+  }
+
+  /* ===== Plays (10) ===== */
   function ply_SINGLE_SET_2(fmt){
     const s=[];
     s.push(...segs(R.OUT10,"X"));
@@ -212,7 +219,7 @@
     if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
     s.push(...segs(R.CORNER,"Z"));
     s.push(...segs(R.FLAT,"RB"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_DOUBLE_BACK_1(fmt){
     const s=[];
@@ -221,7 +228,7 @@
     if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
     s.push(...segs(R.CORNER,"Z"));
     s.push(...segs(R.SWING,"RB"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_DOUBLE_BACK_3(fmt){
     const s=[];
@@ -230,7 +237,7 @@
     if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
     s.push(...segs(R.OUT10,"Z"));
     s.push(...segs(R.FLAT,"RB"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_SMASH(fmt){
     const s=[];
@@ -239,7 +246,7 @@
     s.push(...segs(R.HITCH,"Z"));
     s.push(...segs(R.FLAT,"RB"));
     s.push(...segs(R.C_SIT,"C"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_FLOOD(fmt){
     const s=[];
@@ -248,7 +255,7 @@
     s.push(...segs(R.FLAT,"RB"));         // low
     s.push(...segs(R.SLANT,"X"));         // backside
     s.push(...segs(R.C_SIT,"C"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_QUICK_SLANTS(fmt){
     const s=[];
@@ -257,43 +264,43 @@
     s.push(...segs(R.SLANT,"Z"));
     s.push(...segs(R.C_SIT,"C"));
     s.push(...segs(R.CHECK,"RB"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_LEVELS(fmt){
     const s=[];
-    s.push(...segs(R.POST,"X"));      // deep middle
-    if(fmt>=6) s.push(...segs(R.OUT10,"Y")); // shallow out
-    s.push(...segs(R.FLAT,"RB"));     // flat
-    s.push(...segs(R.FLY,"Z"));       // clear
+    s.push(...segs(R.POST,"X"));
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y"));
+    s.push(...segs(R.FLAT,"RB"));
+    s.push(...segs(R.FLY,"Z"));
     s.push(...segs(R.C_SIT,"C"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_DRIVE(fmt){
     const s=[];
-    s.push(...segs(R.SLANT,"X"));     // shallow
+    s.push(...segs(R.SLANT,"X"));
     if(fmt>=6) s.push(...segs(R.OUT10,"Y"));
-    s.push(...segs(R.POST,"Z"));      // deep post
+    s.push(...segs(R.POST,"Z"));
     s.push(...segs(R.SWING,"RB"));
     s.push(...segs(R.C_SIT,"C"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_WHEEL_SHOT(fmt){
     const s=[];
     s.push(...segs(R.OUT10,"X"));
     if(fmt>=6) s.push(...segs(R.SLANT,"Y"));
     s.push(...segs(R.FLY,"Z"));
-    s.push(...segs(R.WHEEL,"RB"));    // wheel up sideline
+    s.push(...segs(R.WHEEL,"RB"));
     s.push(...segs(R.C_SIT,"C"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
   function ply_STICK(fmt){
     const s=[];
-    s.push(...segs(R.HITCH,"X"));     // stick/hitch
-    if(fmt>=6) s.push(...segs(R.OUT10,"Y")); // out
-    s.push(...segs(R.CORNER,"Z"));    // corner
-    s.push(...segs(R.FLAT,"RB"));     // flat
+    s.push(...segs(R.HITCH,"X"));
+    if(fmt>=6) s.push(...segs(R.OUT10,"Y"));
+    s.push(...segs(R.CORNER,"Z"));
+    s.push(...segs(R.FLAT,"RB"));
     s.push(...segs(R.C_SIT,"C"));
-    return s.map((d,i)=>drawPath(d,i%2)).join('');
+    return s.map((d,i)=>`<path d="${d}" class="route${i%2?' alt':''}"></path>`).join('');
   }
 
   const PLAYS = [
@@ -352,9 +359,11 @@
     for(let i=1;i<=n;i++){ map[i]=($("#init-"+i)?.value||"").toUpperCase().slice(0,3); }
     return map;
   }
+  function mirroredX(x){ return ($("#mirror").value==="L") ? (600 - x) : x; }
+  function Pkey(key){ const p=POS_BASE.find(pp=>pp.key===key); return {...p, x:mirroredX(p.x)}; }
 
   function playerBubble(posKey, label){
-    const p = P(posKey);
+    const p = Pkey(posKey);
     return `
       <circle cx="${p.x}" cy="${p.y}" r="16" class="player" fill="${p.color}"></circle>
       <text x="${p.x}" y="${p.y+4}" text-anchor="middle" class="bubble">${label}</text>
@@ -399,19 +408,19 @@
     PLAYS.forEach(p=>{
       // bubbles
       const bubbles = keysForFormat(fmt).map(k=>{
-        if(k==="QB"||k==="C") return playerBubble(k, (idMode==="initials" && init[row.lineup[k]])? init[row.lineup[k]] : (idMode==="off"?"":row.lineup[k]));
-        const label=(idMode==="initials" && init[row.lineup[k]])? init[row.lineup[k]] : (idMode==="off"?"":row.lineup[k]);
+        const num = row.lineup[k];
+        const label=(idMode==="initials" && init[num])? init[num] : (idMode==="off"?"":num);
         return playerBubble(k,label);
       }).join("");
 
       const routes = p.render(fmt);
-
       const card=document.createElement("div");
       card.className="panel";
       card.innerHTML=`
         <h3 style="margin:4px 0">${p.name}</h3>
         <div class="field-wrap"><div class="field"><div class="sideline"></div>
-          <svg viewBox="0 0 600 420">
+          <svg viewBox="0 0 600 320">
+            ${svgDefs()}
             ${bubbles}
             ${routes}
           </svg>
